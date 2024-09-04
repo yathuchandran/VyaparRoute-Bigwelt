@@ -1,0 +1,20 @@
+@media only screen and (max-width: 600px) {
+    #main {
+      margin-left: -100px;
+    }
+  }
+  
+  #btn {
+    height: 7vh;
+    width: 25vh;
+    background-color: #d4edda;
+  }
+  
+  /* Reset default margins and paddings */
+  html, body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    width: 100%;
+    background-color: Graygreen; /* Apply Graygreen to the entire page */
+  }
