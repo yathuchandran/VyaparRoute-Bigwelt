@@ -11,6 +11,7 @@ import BusinessCard from "./components/Category/BuisnessCard";
 import AddProduct from "./pages/AddProduct";
 import StaffForm from "./pages/StafForm";
 import BusinessForm from "./pages/CustomerName";
+import AllCustomer from "./pages/AllCustomers";
 
 const App = () => {
   return (
@@ -33,6 +34,7 @@ const App = () => {
           <Route path="/select-category" element={<CategoryComp />} />
           <Route path="/board" element={<BusinessCard />} />
           <Route path="/staf" element={<StaffForm />} />
+          <Route path="/all/customers" element={<AllCustomer />} />
         </Routes>
       </Router>
     </div>
@@ -40,7 +42,3 @@ const App = () => {
 };
 
 export default App;
-
-//hello yathueeeeeeeeeeee
-//yath
-//dfflkwenlernewlewlrewlkdflk erer

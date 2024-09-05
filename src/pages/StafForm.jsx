@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   TextField,
   Button,
@@ -22,6 +22,13 @@ import {
   Group,
 } from "@mui/icons-material";
 import Flag from "react-world-flags";
+import {
+  AddStaffAction,
+  addStaffGroup,
+  GetAllGroup,
+} from "../redux/action_api/productAction";
+import { useDispatch, useSelector } from "react-redux";
+import Swal from "sweetalert2";
 
 const countries = [
   { code: "US", name: "United States", flag: "US" },
@@ -32,20 +39,67 @@ const countries = [
 ];
 
 const StaffForm = () => {
+  const dispatch = useDispatch();
+  const { isAdded, loading, error } = useSelector((state) => state.addStaff);
+  const { Allgroup } = useSelector((state) => state.allGroup);
+
+  const [selectedGroups, setSelectedGroups] = useState([]);
+  const [open, setOpen] = useState(false);
+
+  useEffect(() => {
+    if (error) {
+      Swal.fire({
+        title: "something went wrong",
+        text: `${error}`,
+        icon: "error",
+        confirmButtonText: "OK",
+      });
+    }
+
+    if (isAdded) {
+      Swal.fire({
+        title: "staff Added Sucsess",
+        text: "Congrats! staff Added Succsess",
+        icon: "success",
+        confirmButtonText: "OK",
+      });
+    }
+
+    dispatch(GetAllGroup());
+  }, [error, isAdded, dispatch]);
+
+  const handleCheckboxChange = (event, groupName) => {
+    if (event.target.checked) {
+      // Add the group name to the selected groups array
+      setSelectedGroups([...selectedGroups, groupName]);
+    } else {
+      // Remove the group name from the selected groups array
+      setSelectedGroups(selectedGroups.filter((name) => name !== groupName));
+    }
+  };
+
+  // const sendSelectedGroupsToBackend = () => {
+  // Here, you'd use an API call to send `selectedGroups` to the backend
+
+  // }
+  // console.log(selectedGroups);
+
   const [formData, setFormData] = useState({
-    staffName: "",
-    contactNumber: "",
+    staff_name: "",
+    staff_mobile: "",
     countryCode: "",
     password: "",
     showPassword: false,
-    createAttendance: false,
+    attendance: false,
     permissions: false,
     startDate: "",
-    monthlySalary: "",
-    dailyRate: "",
-    manageAccounts: false,
-    manageCustomers: false,
-    manageGroups: false,
+    monthly_salary: "",
+    salary_type: "monthly",
+    manage_account: false,
+    manage_customer: false,
+    manage_lead: false,
+    manage_staff: false,
+    manage_group: false,
     groupPermissions: {
       add: false,
       edit: false,
@@ -72,29 +126,32 @@ const StaffForm = () => {
     }));
   };
 
-  const handleGroupChange = (e) => {
-    setFormData((prevData) => ({
-      ...prevData,
-      newGroup: e.target.value,
-    }));
-  };
+  // const handleGroupChange = (e) => {
+  //   setFormData((prevData) => ({
+  //     ...prevData,
+  //     newGroup: e.target.value,
+  //   }));
+  // };
 
-  const addGroup = () => {
-    if (formData.newGroup.trim()) {
-      setFormData((prevData) => ({
-        ...prevData,
-        groups: [...prevData.groups, formData.newGroup.trim()],
-        newGroup: "", // Clear input field
-      }));
-    }
-  };
+  // const addGroup = () => {
+  //   if (formData.newGroup.trim()) {
+  //     setFormData((prevData) => ({
+  //       ...prevData,
+  //       groups: [...prevData.groups, formData.newGroup.trim()],
+  //       newGroup: "", // Clear input field
+  //     }));
+  //   }
+  // };
 
   const handleSave = () => {
+    // disp
     console.log("Form data:", formData);
-    // Simulate form submission success
-    setSuccessMessage("Form submitted successfully!");
-    // Reset the message after 3 seconds
-    setTimeout(() => setSuccessMessage(""), 3000);
+    // dispatch(AddStaffAction(formData));
+    dispatch(addStaffGroup(formData, selectedGroups));
+  };
+
+  const HandleClick = () => {
+    setOpen(!open);
   };
 
   return (
@@ -137,8 +194,8 @@ const StaffForm = () => {
         >
           <TextField
             label="STAFF"
-            name="staffName"
-            value={formData.staffName}
+            name="staff_name"
+            value={formData.staff_name}
             onChange={handleChange}
             placeholder="Staff name"
             InputProps={{
@@ -216,8 +273,8 @@ const StaffForm = () => {
           <FormControl sx={{ flex: 2, marginTop: "10px" }}>
             <TextField
               label="Mobile Number"
-              name="contactNumber"
-              value={formData.contactNumber}
+              name="staff_mobile"
+              value={formData.staff_mobile}
               onChange={handleChange}
               placeholder="Enter Mobile Number"
               sx={{
@@ -298,8 +355,8 @@ const StaffForm = () => {
             </Typography>
             <Box sx={{ position: "absolute", right: "-10px" }}>
               <Switch
-                name="createAttendance"
-                checked={formData.createAttendance}
+                name="attendance"
+                checked={formData.attendance}
                 onChange={handleChange}
                 sx={{
                   "& .MuiSwitch-switchBase.Mui-checked": {
@@ -316,7 +373,7 @@ const StaffForm = () => {
             </Box>
           </Box>
 
-          {formData.createAttendance && (
+          {formData.attendance && (
             <Box
               display="flex"
               flexDirection="column"
@@ -348,9 +405,9 @@ const StaffForm = () => {
 
               <TextField
                 label="Enter Monthly Salary"
-                name="monthlySalary"
+                name="monthly_salary"
                 type="number"
-                value={formData.monthlySalary}
+                value={formData.monthly_salary}
                 onChange={handleChange}
                 placeholder="Enter Monthly Salary"
                 sx={{ marginBottom: "10px", backgroundColor: "white" }} // White background
@@ -364,9 +421,9 @@ const StaffForm = () => {
               >
                 {/* <TextField
                   label="Monthly Rate"
-                  name="monthlySalary"
+                  name="monthly_salary"
                   type="button"
-                  value={formData.monthlySalary}
+                  value={formData.monthly_salary}
                   onChange={handleChange}
                   placeholder="Monthly Rate"
                   sx={{ width: "40%", backgroundColor: "white" }} // White background
@@ -461,7 +518,7 @@ const StaffForm = () => {
               }}
             >
               <Typography variant="body2" sx={{ marginBottom: "10px" }}>
-                <strong>Give full permission to {formData.staffName}</strong>
+                <strong>Give full permission to {formData.staff_name}</strong>
               </Typography>
               <FormControl component="fieldset" margin="normal">
                 <Box
@@ -475,8 +532,8 @@ const StaffForm = () => {
                     sx={{ marginBottom: "10px", justifyContent: "center" }}
                   >
                     <Checkbox
-                      name="manageAccounts"
-                      checked={formData.manageAccounts}
+                      name="manage_account"
+                      checked={formData.manage_account}
                       onChange={handleChange}
                     />
                     <Typography variant="body2" sx={{ marginLeft: "8px" }}>
@@ -493,8 +550,8 @@ const StaffForm = () => {
                     sx={{ marginBottom: "10px", justifyContent: "center" }}
                   >
                     <Checkbox
-                      name="manageCustomers"
-                      checked={formData.manageCustomers}
+                      name="manage_customer"
+                      checked={formData.manage_customer}
                       onChange={handleChange}
                     />
                     <Typography variant="body2" sx={{ marginLeft: "8px" }}>
@@ -507,148 +564,88 @@ const StaffForm = () => {
                     sx={{ marginBottom: "10px", justifyContent: "center" }}
                   >
                     <Checkbox
-                      name="manageGroups"
-                      checked={formData.manageGroups}
+                      name="manage_lead"
+                      checked={formData.manage_lead}
                       onChange={handleChange}
                     />
                     <Typography variant="body2" sx={{ marginLeft: "8px" }}>
-                      Manage Groups
+                      Manage Lead
                     </Typography>
-                    <Group sx={{ marginLeft: "8px" }} />
+                    <span style={{ fontSize: "12px", fontWeight: "normal" }}>
+                      (get leads and sale)
+                    </span>
                   </Box>
-                  {formData.manageGroups && (
-                    <>
-                      <Box
-                        display="flex"
-                        flexDirection="column"
-                        sx={{
-                          marginTop: "10px",
-                          textAlign: "center",
-                        }}
-                      >
-                        <Box
-                          display="flex"
-                          alignItems="center"
-                          sx={{ marginBottom: "8px", justifyContent: "center" }}
-                        >
-                          <Checkbox
-                            name="groupPermissions.add"
-                            checked={formData.groupPermissions.add}
-                            onChange={handleChange}
-                          />
-                          <Typography
-                            variant="body2"
-                            sx={{ marginLeft: "8px" }}
-                          >
-                            Add
-                          </Typography>
-                        </Box>
-                        <Box
-                          display="flex"
-                          alignItems="center"
-                          sx={{ marginBottom: "8px", justifyContent: "center" }}
-                        >
-                          <Checkbox
-                            name="groupPermissions.edit"
-                            checked={formData.groupPermissions.edit}
-                            onChange={handleChange}
-                          />
-                          <Typography
-                            variant="body2"
-                            sx={{ marginLeft: "8px" }}
-                          >
-                            Edit
-                          </Typography>
-                        </Box>
-                        <Box
-                          display="flex"
-                          alignItems="center"
-                          sx={{ justifyContent: "center" }}
-                        >
-                          <Checkbox
-                            name="groupPermissions.delete"
-                            checked={formData.groupPermissions.delete}
-                            onChange={handleChange}
-                          />
-                          <Typography
-                            variant="body2"
-                            sx={{ marginLeft: "8px" }}
-                          >
-                            Delete
-                          </Typography>
-                        </Box>
-                      </Box>
+                  <Box
+                    display="flex"
+                    alignItems="center"
+                    sx={{ marginBottom: "10px", justifyContent: "center" }}
+                  >
+                    <Checkbox
+                      name="manage_staff"
+                      checked={formData.manage_staff}
+                      onChange={handleChange}
+                    />
+                    <Typography variant="body2" sx={{ marginLeft: "8px" }}>
+                      Manage staff
+                    </Typography>
+                    <span style={{ fontSize: "12px", fontWeight: "normal" }}>
+                      (manage attendance add new staff and permission)
+                    </span>
+                  </Box>
+                  <Box
+                    onClick={() => {
+                      HandleClick();
+                    }}
+                    display="flex"
+                    alignItems="center"
+                    sx={{
+                      marginTop: "18px",
+                      marginBottom: "10px",
+                      justifyContent: "center",
+                      backgroundColor: "#cbcdce",
+                      height: "12vh",
+                    }}
+                  >
+                    <Group sx={{ color: "blue" }} />
 
-                      <Box
-                        display="flex"
-                        flexDirection="column"
-                        sx={{
-                          fontSize: "14px",
-                          padding: "10px",
-                          backgroundColor: "whitesmoke",
-                          boxShadow: "0 6px 12px rgba(0, 0, 0, 0.3)",
-                          borderRadius: "4px",
-                          border: "1px solid rgba(0, 0, 0, 0.23)", // Added border to match TextField
-                          width: "100%",
-                          marginTop: "20px",
-                          textAlign: "center", // Center text in the box
-                        }}
-                      >
-                        <Typography
-                          variant="body2"
-                          sx={{ marginBottom: "10px" }}
-                        >
-                          <strong>Manage Groups</strong>
-                        </Typography>
-                        <TextField
-                          label="New Group Name"
-                          name="newGroup"
-                          value={formData.newGroup}
-                          onChange={handleGroupChange}
-                          placeholder="Enter new group name"
-                          sx={{ marginBottom: "1px", backgroundColor: "white" }} // White background
-                        />
-                        <Button
-                          variant="outlined"
-                          color="primary"
-                          onClick={addGroup}
-                          sx={{ marginBottom: "20px" }}
-                        >
-                          Add Group
-                        </Button>
-
-                        {formData.groups.length > 0 && (
-                          <Box>
-                            {formData.groups.map((group, index) => (
-                              <Box
-                                key={index}
-                                display="flex"
-                                alignItems="center"
-                                sx={{
-                                  marginBottom: "10px",
-                                  justifyContent: "center",
-                                }}
-                              >
-                                <Typography variant="body2" sx={{ flex: 1 }}>
-                                  {group}
-                                </Typography>
-                                <IconButton aria-label="edit group">
-                                  <Person />
-                                </IconButton>
-                                <IconButton
-                                  aria-label="delete group"
-                                  color="error"
-                                >
-                                  <Group />
-                                </IconButton>
-                              </Box>
-                            ))}
-                          </Box>
-                        )}
-                      </Box>
-                    </>
-                  )}
+                    <Box>
+                      <Typography sx={{ width: "40vh" }}>
+                        Manage Groups
+                        <span sx={{ fontSize: "8px" }}>
+                          (Give acsess to staff Respective Group customer
+                          Managment add and Edit all Data)
+                        </span>
+                      </Typography>
+                    </Box>
+                  </Box>
                 </Box>
+
+                {open && (
+                  <Box>
+                    {Allgroup?.customers_group?.map((group) => (
+                      <Box
+                        key={group.group_id}
+                        display="flex"
+                        alignItems="center"
+                        sx={{
+                          marginBottom: "10px",
+                          justifyContent: "center",
+                          backgroundColor: "lightblue",
+                        }}
+                      >
+                        <Checkbox
+                          name={group.group_name}
+                          onChange={(e) =>
+                            handleCheckboxChange(e, group.group_name)
+                          }
+                        />
+                        <Typography variant="body2" sx={{ marginLeft: "8px" }}>
+                          {group.group_name}
+                        </Typography>
+                      </Box>
+                    ))}
+                  </Box>
+                )}
               </FormControl>
             </Box>
           )}

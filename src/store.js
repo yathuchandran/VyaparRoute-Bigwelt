@@ -5,11 +5,12 @@ import {
   compose,
 } from "redux";
 import { thunk } from "redux-thunk";
-import { AddStaf, PrdReducer } from "./redux/reducer/productReducer";
+import { AddStaf, PrdReducer, FetchAll } from "./redux/reducer/productReducer";
 
 const reducers = combineReducers({
   products: PrdReducer,
   addStaff: AddStaf,
+  allGroup: FetchAll,
 });
 
 const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
