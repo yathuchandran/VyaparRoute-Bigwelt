@@ -49,6 +49,10 @@ const AddCustomerForm = () => {
   const [anchorEl, setAnchorEl] = useState(null);
   const [newGroupName, setNewGroupName] = useState("");
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> 2a10fe2d5c6291a70cc6a48fd6e45cfc97bf46d9
   useEffect(() => {
     if (loading === true) {
       setLoader(true);
@@ -124,6 +128,7 @@ const AddCustomerForm = () => {
 
   // Save customer and reset form
   const handleSaveAndNew = () => {
+<<<<<<< HEAD
     const selectedGroup = groups.find((group) => group.id === selectedGroupId);
 
     console.log("Saving customer:", {
@@ -137,6 +142,12 @@ const AddCustomerForm = () => {
     setCustomerName("");
     setContactNumber("");
     setSelectedGroupId("");
+=======
+    const selectedGroup = groups.find(
+      (group) => group.id === selectedGroupId
+    );
+
+>>>>>>> 2a10fe2d5c6291a70cc6a48fd6e45cfc97bf46d9
   };
 
   // Save customer without resetting the form
@@ -372,7 +383,26 @@ const AddCustomerForm = () => {
         </div>
       </div>
 
+<<<<<<< HEAD
       <Loader open={loader} />
+=======
+      {/* Success Message Snackbar */}
+      {/* {successMessage && (
+        <Snackbar
+          open={Boolean(successMessage)}
+          autoHideDuration={6000}
+          onClose={() => setSuccessMessage("")}
+        >
+          <Alert onClose={() => setSuccessMessage("")} severity="success">
+            {successMessage}
+          </Alert>
+        </Snackbar>
+      )}
+      <Loader open={loader} />
+      )} */}
+            <Loader open={loader}  />
+
+>>>>>>> 2a10fe2d5c6291a70cc6a48fd6e45cfc97bf46d9
     </Container>
   );
 };
