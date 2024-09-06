@@ -155,7 +155,7 @@ export const addStaffGroup =
     }
   };
 
-export const allCustomers = () => async (dispatch) => {
+export const allCustomersAction = () => async (dispatch) => {
   try {
     dispatch({ type: ALL_CUSTOMER_REQUEST });
 
@@ -167,7 +167,7 @@ export const allCustomers = () => async (dispatch) => {
 
     dispatch({
       type: ALL_CUSTOMER_SUCCSESS,
-      payload: data,
+      payload: data.data,
     });
   } catch (error) {
     dispatch({

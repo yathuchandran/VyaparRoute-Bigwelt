@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Box,
   Typography,
@@ -15,7 +15,10 @@ import SearchIcon from "@mui/icons-material/Search";
 import FilterListIcon from "@mui/icons-material/FilterList";
 import { useNavigate } from "react-router-dom";
 import Modal from "@mui/material/Modal";
+import { Graygreen } from "../config";
 
+import { useSelector, useDispatch } from "react-redux";
+import { allCustomersAction } from "../redux/action_api/productAction";
 const style = {
   position: "absolute",
   top: "50%",
@@ -34,7 +37,18 @@ const AllCustomers = () => {
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
 
+  const { loading, error, allCustomers } = useSelector(
+    (state) => state.allGroup
+  );
+
+  console.log(allCustomers);
+
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    dispatch(allCustomersAction());
+  }, [dispatch]);
   const customers = [
     {
       name: "Dilip Joshi",
@@ -93,6 +107,10 @@ const AllCustomers = () => {
 
   const handleCustomerBtn = () => {
     navigate("/add/customer");
+  };
+
+  const handleNextBtn = () => {
+    navigate("/success");
   };
 
   return (
@@ -171,20 +189,26 @@ const AllCustomers = () => {
       </Box>
 
       <List>
-        {filtered.map((customer, index) => (
+        {allCustomers?.users.map((customer, index) => (
           <ListItem
             key={index}
             sx={{
               border: "1px solid #ccc",
               borderRadius: "8px",
               marginBottom: 1,
+              height: "8vh",
             }}
           >
             <Grid container alignItems="center">
+              <img
+                src="/images/loginhome.jpg"
+                alt=""
+                style={{ width: "5vh", height: "" }}
+              />
               <Grid item xs={6}>
                 <ListItemText
-                  primary={customer.name}
-                  secondary={customer.group}
+                  primary={customer.fullname}
+                  secondary={customer.group_name}
                 />
               </Grid>
               <Grid item xs={3} align="right">
@@ -192,7 +216,7 @@ const AllCustomers = () => {
                   variant="body2"
                   color={customer.status < 0 ? "red" : "green"}
                 >
-                  {customer.amount}
+                  {customer.security_deposit}
                 </Typography>
               </Grid>
               <Grid item xs={3} align="right">
@@ -219,6 +243,20 @@ const AllCustomers = () => {
           }}
         >
           ADD CUSTOMER
+        </Button>
+      </Box>
+
+      <Box>
+        <Button
+          onClick={handleNextBtn}
+          variant="contained"
+          fullWidth
+          sx={{
+            marginTop: 2,
+            bgcolor: Graygreen,
+          }}
+        >
+          Next
         </Button>
       </Box>
     </Box>

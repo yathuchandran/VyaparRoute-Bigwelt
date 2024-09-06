@@ -18,8 +18,11 @@ import { Graygreen } from "../config";
 import { addGroupAction } from "../redux/action_api/Api";
 import Loader from "../components/Loder/Loder";
 import Swal from "sweetalert2";
+import { useNavigate } from "react-router-dom";
+
 const AddCustomerForm = () => {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   // Fetch groups data from Redux store
   const { Allgroup } = useSelector((state) => state.allGroup);
@@ -33,8 +36,6 @@ const AddCustomerForm = () => {
   const [successMessage, setSuccessMessage] = useState("");
   const [anchorEl, setAnchorEl] = useState(null);
   const [newGroupName, setNewGroupName] = useState("");
-
-
 
   useEffect(() => {
     if (loading === true) {
@@ -50,6 +51,8 @@ const AddCustomerForm = () => {
         showConfirmButton: false,
         timer: 1500,
       });
+
+      navigate("/all/customers");
     }
 
     if (error) {
@@ -61,8 +64,7 @@ const AddCustomerForm = () => {
         timer: 1500,
       });
     }
-
-  }, [loading,isSucsess,error]);
+  }, [loading, isSucsess, error]);
 
   // Ref for the Add New Group button
   const addNewGroupRef = useRef(null);
@@ -126,6 +128,8 @@ const AddCustomerForm = () => {
     setCustomerName("");
     setContactNumber("");
     setSelectedGroupId("");
+
+    navigate("/all/customers");
   };
 
   // Save customer without resetting the form
@@ -142,6 +146,7 @@ const AddCustomerForm = () => {
     });
 
     setSuccessMessage("Customer saved successfully!");
+    navigate("/all/customers");
   };
 
   const handleImportCustomers = () => {
@@ -345,8 +350,7 @@ const AddCustomerForm = () => {
           </Alert>
         </Snackbar>
       )}
-            <Loader open={loader}  />
-
+      <Loader open={loader} />
     </Container>
   );
 };

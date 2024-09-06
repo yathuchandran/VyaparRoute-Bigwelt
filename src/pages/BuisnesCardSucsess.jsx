@@ -13,13 +13,10 @@ import AddCustomerForm from "../pages/AddCustomer";
 import BusinessForm from "../pages/BuisnesForm";
 import Loader from "../components/Loder/Loder";
 import SucsessAnimation from "./SucsessAnimation";
+import { useNavigate } from "react-router-dom";
 
 const BuisnesCardSucsess = () => {
-  // Step components
-  const CreateBusiness = () => {
-    // return <BusinessForm onToggle={handleToggle} />;
-  };
-
+  const navigate = useNavigate();
   const AddProducte = () => {
     return (
       <Typography variant="h5">
@@ -55,6 +52,8 @@ const BuisnesCardSucsess = () => {
     setActiveStep((prevActiveStep) =>
       Math.min(prevActiveStep + 1, steps.length - 1)
     );
+
+    navigate("/home");
   };
 
   const handleBack = () => {
