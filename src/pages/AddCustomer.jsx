@@ -15,7 +15,7 @@ import {
 import { GetAllGroup } from "../redux/action_api/productAction";
 import { useSelector, useDispatch } from "react-redux";
 import { Graygreen } from "../config";
-import { addGroupAction } from "../redux/action_api/Api";
+import { addCustomer, addGroupAction } from "../redux/action_api/Api";
 import Loader from "../components/Loder/Loder";
 import Swal from "sweetalert2";
 const AddCustomerForm = () => {
@@ -24,6 +24,9 @@ const AddCustomerForm = () => {
   // Fetch groups data from Redux store
   const { Allgroup } = useSelector((state) => state.allGroup);
   const { loading, error, isSucsess } = useSelector((state) => state.Addgroup);
+  const { loading:load, error : err, isSucsess:suc } = useSelector((state) => state.AddCustomer);
+  const stafId = localStorage.getItem("stafId")
+console.log(load,err,suc,"===================================================================");
 
   const [loader, setLoader] = useState(false);
   const [customerName, setCustomerName] = useState("");
@@ -34,6 +37,7 @@ const AddCustomerForm = () => {
   const [anchorEl, setAnchorEl] = useState(null);
   const [newGroupName, setNewGroupName] = useState("");
 
+console.log(newGroupName);
 
 
   useEffect(() => {
@@ -83,6 +87,7 @@ const AddCustomerForm = () => {
   const handleCustomerNameChange = (e) => setCustomerName(e.target.value);
   const handleContactNumberChange = (e) => setContactNumber(e.target.value);
 
+  
   // Handler for group selection
   const handleGroupChange = (event) => {
     const groupId = event.target.value;
@@ -102,44 +107,41 @@ const AddCustomerForm = () => {
     if (newGroupName.trim() === "") {
       return;
     }
-
     dispatch(addGroupAction(newGroupName.trim()));
     // setGroups((prevGroups) => [...prevGroups, newGroupName.trim()]);
-    // setSelectedGroupId(newGroup.group_id);
+    // setSelectedGroupId(newGroup.id);
     handleDialogClose();
   };
 
   // Save customer and reset form
   const handleSaveAndNew = () => {
     const selectedGroup = groups.find(
-      (group) => group.group_id === selectedGroupId
+      (group) => group.id === selectedGroupId
     );
-
-    console.log("Saving customer:", {
-      customerName,
-      contactNumber,
-      group_id: selectedGroupId,
-      group_name: selectedGroup ? selectedGroup.group_name : "",
-    });
-
-    setSuccessMessage("Customer saved successfully!");
-    setCustomerName("");
-    setContactNumber("");
-    setSelectedGroupId("");
+    
   };
 
   // Save customer without resetting the form
   const handleSaveCustomer = () => {
     const selectedGroup = groups.find(
-      (group) => group.group_id === selectedGroupId
+      (group) => group.id === selectedGroupId
     );
 
-    console.log("Saving customer:", {
+    const formData = new FormData();
+    formData.set("fullname", customerName);
+    formData.set("mobile", contactNumber);
+    formData.set("group_id", selectedGroupId);
+    formData.set("staff_id", stafId||'');
+
+    dispatch(addCustomer(formData));
+
+    console.log("Saving customer:====", {stafId,
       customerName,
       contactNumber,
-      group_id: selectedGroupId,
+      id: selectedGroupId,
       group_name: selectedGroup ? selectedGroup.group_name : "",
     });
+    // dispatch(addCustomer());
 
     setSuccessMessage("Customer saved successfully!");
   };
@@ -219,15 +221,31 @@ const AddCustomerForm = () => {
             value={selectedGroupId}
             onChange={handleGroupChange}
             label="Group"
+
             renderValue={(selected) => {
               const selectedGroup = groups.find(
-                (group) => group.group_id === selected
+                (group) => group.id === selected
               );
               return selectedGroup
                 ? selectedGroup.group_name
                 : "Select a group";
             }}
+            sx={{ width: "100%",  fontSize: "14px", ".MuiSelect-select": { // This targets the selected value area
+              textAlign: 'left',
+              paddingLeft: '12px', // Adjust the padding as needed
+            }, }}
+            MenuProps={{
+              PaperProps: {
+                sx: {
+                  '& .MuiMenuItem-root': {
+                    fontSize: '0.875rem', // smaller font size
+                    padding: '4px 8px', // reduced padding
+                  },
+                },
+              },
+            }}
           >
+            
             <Button
               ref={addNewGroupRef}
               variant="outlined"
@@ -240,7 +258,7 @@ const AddCustomerForm = () => {
               Add New Group
             </Button>
             {groups.map((group) => (
-              <MenuItem key={group.group_id} value={group.group_id}>
+              <MenuItem key={group.id} value={group.id}>
                 {group.group_name}
               </MenuItem>
             ))}
@@ -334,7 +352,7 @@ const AddCustomerForm = () => {
       </div>
 
       {/* Success Message Snackbar */}
-      {successMessage && (
+      {/* {successMessage && (
         <Snackbar
           open={Boolean(successMessage)}
           autoHideDuration={6000}
@@ -344,7 +362,7 @@ const AddCustomerForm = () => {
             {successMessage}
           </Alert>
         </Snackbar>
-      )}
+      )} */}
             <Loader open={loader}  />
 
     </Container>
