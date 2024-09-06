@@ -29,7 +29,7 @@ import {
 } from "../redux/action_api/productAction";
 import { useDispatch, useSelector } from "react-redux";
 import Swal from "sweetalert2";
-
+import { useNavigate } from "react-router-dom";
 const countries = [
   { code: "US", name: "United States", flag: "US" },
   { code: "GB", name: "United Kingdom", flag: "GB" },
@@ -40,6 +40,7 @@ const countries = [
 
 const StaffForm = () => {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const { isAdded, loading, error } = useSelector((state) => state.addStaff);
   const { Allgroup } = useSelector((state) => state.allGroup);
 
@@ -64,6 +65,8 @@ const StaffForm = () => {
         icon: "success",
         confirmButtonText: "OK",
       });
+
+      navigate("/all/customers");
     }
 
     dispatch(GetAllGroup());

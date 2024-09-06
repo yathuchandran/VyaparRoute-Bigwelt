@@ -4,8 +4,6 @@ import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import { CSSTransition } from "react-transition-group";
 
 const SucsessAnimation = () => {
-  const [show, setShow] = useState(false);
-
   //   useEffect(() => {
   //     // Automatically show the success component after a delay
   //     const timer = setTimeout(() => {
@@ -54,16 +52,9 @@ const SucsessAnimation = () => {
         Success!
       </Typography>
       <Typography variant="body1" sx={{ mt: 1, color: "#666" }}>
-        Your operation was completed successfully.
+        Congratulations! You have registered successfully and can now start you
+        business.
       </Typography>
-      <Button
-        onClick={handleClose}
-        variant="contained"
-        color="primary"
-        sx={{ mt: 3 }}
-      >
-        Close
-      </Button>
     </Box>
     // </CSSTransition>
   );
