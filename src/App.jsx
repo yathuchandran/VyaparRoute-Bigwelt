@@ -12,6 +12,9 @@ import AddProduct from "./pages/AddProduct";
 import StaffForm from "./pages/StafForm";
 import BusinessForm from "./pages/CustomerName";
 import AllCustomer from "./pages/AllCustomers";
+import AddCustomerForm from "./pages/AddCustomer";
+import BuisnesCardSucsess from "./pages/BuisnesCardSucsess";
+import Temp from "./pages/Temp";
 
 const App = () => {
   return (
@@ -19,6 +22,7 @@ const App = () => {
       <Router>
         <Routes>
           <Route path="/" exact element={<Login />}></Route>
+
           <Route
             path="/otp-verification"
             exact
@@ -35,6 +39,9 @@ const App = () => {
           <Route path="/board" element={<BusinessCard />} />
           <Route path="/staf" element={<StaffForm />} />
           <Route path="/all/customers" element={<AllCustomer />} />
+          <Route path="/add/customer" element={<AddCustomerForm />} />
+          <Route path="/sucsess" element={<BuisnesCardSucsess />} />
+          <Route path="/tmp" element={<Temp />} />
         </Routes>
       </Router>
     </div>

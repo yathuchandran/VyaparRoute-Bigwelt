@@ -45,6 +45,7 @@ const StaffForm = () => {
 
   const [selectedGroups, setSelectedGroups] = useState([]);
   const [open, setOpen] = useState(false);
+  const [grp_id, setGrp_id] = useState("");
 
   useEffect(() => {
     if (error) {
@@ -68,7 +69,8 @@ const StaffForm = () => {
     dispatch(GetAllGroup());
   }, [error, isAdded, dispatch]);
 
-  const handleCheckboxChange = (event, groupName) => {
+  const handleCheckboxChange = (event, groupName, id) => {
+    setGrp_id(id);
     if (event.target.checked) {
       // Add the group name to the selected groups array
       setSelectedGroups([...selectedGroups, groupName]);
@@ -147,7 +149,7 @@ const StaffForm = () => {
     // disp
     console.log("Form data:", formData);
     // dispatch(AddStaffAction(formData));
-    dispatch(addStaffGroup(formData, selectedGroups));
+    dispatch(addStaffGroup(formData, selectedGroups, grp_id));
   };
 
   const HandleClick = () => {
@@ -622,7 +624,7 @@ const StaffForm = () => {
 
                 {open && (
                   <Box>
-                    {Allgroup?.customers_group?.map((group) => (
+                    {Allgroup?.groups?.map((group) => (
                       <Box
                         key={group.group_id}
                         display="flex"
@@ -636,7 +638,7 @@ const StaffForm = () => {
                         <Checkbox
                           name={group.group_name}
                           onChange={(e) =>
-                            handleCheckboxChange(e, group.group_name)
+                            handleCheckboxChange(e, group.group_name, group.id)
                           }
                         />
                         <Typography variant="body2" sx={{ marginLeft: "8px" }}>
