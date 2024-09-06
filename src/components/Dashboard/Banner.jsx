@@ -27,7 +27,7 @@ export default function Banner() {
             <img
               src="./images/loginhome.jpg"
               alt=""
-              style={{ height: "2", width: "5vh", paddingRight: "12px" }}
+              style={{ height: "2vh", width: "5vh", paddingRight: "12px" }}
             />
           </span>
           MM EnterPrices
