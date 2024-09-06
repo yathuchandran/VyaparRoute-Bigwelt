@@ -88,7 +88,7 @@ export const GetAllGroup = () => async (dispatch) => {
     dispatch({ type: FETCH_REQUEST });
 
     const { data } = await axios.get(
-      "https://vr.w4u.in/manage/api/customers_group/all",
+      "https://vr.w4u.in/manage/api/groups/all",
 
       {
         headers: {

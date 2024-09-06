@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import {
   TextField,
   Button,
@@ -10,98 +10,150 @@ import {
   Alert,
   Container,
   Typography,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogContentText,
-  DialogActions,
+  Popover,
 } from "@mui/material";
-
+import { GetAllGroup } from "../redux/action_api/productAction";
+import { useSelector, useDispatch } from "react-redux";
+import { Graygreen } from "../config";
+import { addGroupAction } from "../redux/action_api/Api";
+import Loader from "../components/Loder/Loder";
+import Swal from "sweetalert2";
 const AddCustomerForm = () => {
-  // State to manage form values
+  const dispatch = useDispatch();
+
+  // Fetch groups data from Redux store
+  const { Allgroup } = useSelector((state) => state.allGroup);
+  const { loading, error, isSucsess } = useSelector((state) => state.Addgroup);
+
+  const [loader, setLoader] = useState(false);
   const [customerName, setCustomerName] = useState("");
   const [contactNumber, setContactNumber] = useState("");
-  const [selectedGroup, setSelectedGroup] = useState("");
-  const [groups, setGroups] = useState(["Group 1", "Group 2"]); // Default groups
-  const [successMessage, setSuccessMessage] = useState(""); // Success message state
-  const [loader, setLoader] = useState(false)
-  const [open, setOpen] = useState(false);
-  const [newGroupName, setNewGroupName] = useState('');
-  
-  const handleLoaderClose = () => {
-    setLoader(false);
-  };
-  const handleLoaderOpen = () => {
-    setLoader(true);
-  };
-  
-  // Handlers
+  const [selectedGroupId, setSelectedGroupId] = useState("");
+  const [groups, setGroups] = useState([]); // Initialize as empty
+  const [successMessage, setSuccessMessage] = useState("");
+  const [anchorEl, setAnchorEl] = useState(null);
+  const [newGroupName, setNewGroupName] = useState("");
+
+
+
+  useEffect(() => {
+    if (loading === true) {
+      setLoader(true);
+    } else {
+      setLoader(false);
+    }
+    if (isSucsess) {
+      Swal.fire({
+        title: "group added successfully!",
+        text: `Your group has been successfully added`,
+        icon: "success",
+        showConfirmButton: false,
+        timer: 1500,
+      });
+    }
+
+    if (error) {
+      Swal.fire({
+        title: "Something went wrong!",
+        text: "There was an error. Please try again later.",
+        icon: "error",
+        showConfirmButton: false,
+        timer: 1500,
+      });
+    }
+
+  }, [loading,isSucsess,error]);
+
+  // Ref for the Add New Group button
+  const addNewGroupRef = useRef(null);
+
+  // Fetch groups when component mounts
+  useEffect(() => {
+    dispatch(GetAllGroup());
+  }, [dispatch]);
+
+  // Update local groups state when Redux state changes
+  useEffect(() => {
+    if (Allgroup && Allgroup.groups) {
+      setGroups(Allgroup.groups);
+    }
+  }, [Allgroup]);
+
+  // Handlers for form fields
   const handleCustomerNameChange = (e) => setCustomerName(e.target.value);
   const handleContactNumberChange = (e) => setContactNumber(e.target.value);
 
-  // const handleGroupChange = (e) => {
-  //   if (e.target.value === "add-new") {
-  //     handleAddNewGroup();
-  //   } else {
-  //     setSelectedGroup(e.target.value);
-  //   }
-  // };
-
+  // Handler for group selection
   const handleGroupChange = (event) => {
-    const value = event.target.value;
-    setSelectedGroup(value);
-    if (value === 'add-new') {
-      setOpen(true);
-    }
+    const groupId = event.target.value;
+    setSelectedGroupId(groupId);
   };
 
+  // Open and close popover handlers
+  const handleDialogOpen = (event) => setAnchorEl(addNewGroupRef.current);
   const handleDialogClose = () => {
-    setOpen(false);
-    setNewGroupName('');
+    setAnchorEl(null);
+    setNewGroupName("");
   };
 
+  // Add new group handler
   const handleAddNewGroup = () => {
-    const newGroup = prompt("Enter new group name:");
-    if (newGroup) {
-      setGroups([...groups, newGroup]);
-      setSelectedGroup(newGroup); // Select the newly added group
+    console.log("NEW GROUP ADDD");
+    if (newGroupName.trim() === "") {
+      return;
     }
-    console.log('New group added:', newGroupName);
+
+    dispatch(addGroupAction(newGroupName.trim()));
+    // setGroups((prevGroups) => [...prevGroups, newGroupName.trim()]);
+    // setSelectedGroupId(newGroup.group_id);
     handleDialogClose();
-    setSelectedGroup(newGroupName);
   };
 
+  // Save customer and reset form
   const handleSaveAndNew = () => {
-    // Logic to save the customer and reset form
+    const selectedGroup = groups.find(
+      (group) => group.group_id === selectedGroupId
+    );
+
     console.log("Saving customer:", {
       customerName,
       contactNumber,
-      selectedGroup,
+      group_id: selectedGroupId,
+      group_name: selectedGroup ? selectedGroup.group_name : "",
     });
-    setSuccessMessage("Customer saved successfully!"); // Set success message
-    // Reset form fields
+
+    setSuccessMessage("Customer saved successfully!");
     setCustomerName("");
     setContactNumber("");
-    setSelectedGroup("");
+    setSelectedGroupId("");
   };
 
+  // Save customer without resetting the form
   const handleSaveCustomer = () => {
-    // Logic to save the customer
+    const selectedGroup = groups.find(
+      (group) => group.group_id === selectedGroupId
+    );
+
     console.log("Saving customer:", {
       customerName,
       contactNumber,
-      selectedGroup,
+      group_id: selectedGroupId,
+      group_name: selectedGroup ? selectedGroup.group_name : "",
     });
-    setSuccessMessage("Customer saved successfully!"); // Set success message
+
+    setSuccessMessage("Customer saved successfully!");
   };
 
   const handleImportCustomers = () => {
-    // Logic to handle importing customers
     alert("Import Customers functionality is not implemented yet.");
   };
 
+  const open = Boolean(anchorEl);
+  const id = open ? "simple-popover" : undefined;
+
   return (
     <Container maxWidth="sm" style={{ padding: "16px" }}>
+      {/* Header */}
       <div
         style={{
           display: "flex",
@@ -112,6 +164,7 @@ const AddCustomerForm = () => {
         <Typography variant="h4">Add New Customer</Typography>
       </div>
 
+      {/* Import Customers Button */}
       <div
         style={{
           display: "flex",
@@ -130,6 +183,7 @@ const AddCustomerForm = () => {
         </Button>
       </div>
 
+      {/* Form Container */}
       <div
         style={{
           backgroundColor: "#f5f5f5",
@@ -137,6 +191,7 @@ const AddCustomerForm = () => {
           borderRadius: "8px",
         }}
       >
+        {/* Customer Name Field */}
         <FormControl fullWidth style={{ marginBottom: "16px" }}>
           <TextField
             label="Customer Name"
@@ -146,6 +201,7 @@ const AddCustomerForm = () => {
           />
         </FormControl>
 
+        {/* Contact Number Field */}
         <FormControl fullWidth style={{ marginBottom: "16px" }}>
           <TextField
             label="Contact Number"
@@ -155,44 +211,96 @@ const AddCustomerForm = () => {
           />
         </FormControl>
 
+        {/* Group Selection */}
         <FormControl fullWidth style={{ marginBottom: "16px" }}>
-          <InputLabel>Group</InputLabel>
+          <InputLabel id="group-select-label">Group</InputLabel>
           <Select
-          value={selectedGroup}
-          onChange={handleGroupChange}
-          renderValue={(selected) => selected || 'Select a group'}
-        >
-          <MenuItem value="add-new">Add New Group</MenuItem>
-          {/* Add existing groups here */}
-        </Select>
+            labelId="group-select-label"
+            value={selectedGroupId}
+            onChange={handleGroupChange}
+            label="Group"
+            renderValue={(selected) => {
+              const selectedGroup = groups.find(
+                (group) => group.group_id === selected
+              );
+              return selectedGroup
+                ? selectedGroup.group_name
+                : "Select a group";
+            }}
+          >
+            <Button
+              ref={addNewGroupRef}
+              variant="outlined"
+              onClick={handleDialogOpen}
+              style={{
+                marginLeft: "70%",
+                color: Graygreen,
+              }}
+            >
+              Add New Group
+            </Button>
+            {groups.map((group) => (
+              <MenuItem key={group.group_id} value={group.group_id}>
+                {group.group_name}
+              </MenuItem>
+            ))}
+          </Select>
         </FormControl>
 
-<Dialog open={open} onClose={handleDialogClose}>
-        <DialogTitle>Add New Group</DialogTitle>
-        <DialogContent>
-          <DialogContentText>
-            Please enter the name for the new group.
-          </DialogContentText>
-          <TextField
-            autoFocus
-            margin="dense"
-            label="Group Name"
-            type="text"
-            fullWidth
-            value={newGroupName}
-            onChange={(e) => setNewGroupName(e.target.value)}
-          />
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleDialogClose} color="primary">
-            Cancel
-          </Button>
-          <Button onClick={handleAddNewGroup} color="primary">
-            Add
-          </Button>
-        </DialogActions>
-      </Dialog>
+        {/* Popover for adding a new group */}
+        <Popover
+          id={id}
+          open={open}
+          onClose={handleDialogClose}
+          anchorReference="anchorPosition"
+          anchorPosition={{
+            top: window.innerHeight / 2,
+            left: window.innerWidth / 2,
+          }}
+          anchorOrigin={{
+            vertical: "center",
+            horizontal: "center",
+          }}
+          transformOrigin={{
+            vertical: "center",
+            horizontal: "center",
+          }}
+          PaperProps={{
+            sx: {
+              padding: 2,
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center", // Center content horizontally
+              justifyContent: "center", // Center content vertically
+              width: "300px", // Control popover size
+              position: "absolute", // Ensure it's positioned centrally
+              top: "50%",
+              left: "50%",
+              transform: "translate(-50%, -50%)",
+            },
+          }}
+        >
+          <div style={{ padding: "16px" }}>
+            <Typography variant="h6">Add New Group</Typography>
+            <TextField
+              autoFocus
+              margin="dense"
+              label="Group Name"
+              type="text"
+              fullWidth
+              value={newGroupName}
+              onChange={(e) => setNewGroupName(e.target.value)}
+            />
+            <Button onClick={handleAddNewGroup} color="primary">
+              Add
+            </Button>
+            <Button onClick={handleDialogClose} color="secondary">
+              Cancel
+            </Button>
+          </div>
+        </Popover>
 
+        {/* Save Buttons */}
         <div
           style={{
             display: "flex",
@@ -225,6 +333,7 @@ const AddCustomerForm = () => {
         </div>
       </div>
 
+      {/* Success Message Snackbar */}
       {successMessage && (
         <Snackbar
           open={Boolean(successMessage)}
@@ -236,6 +345,8 @@ const AddCustomerForm = () => {
           </Alert>
         </Snackbar>
       )}
+            <Loader open={loader}  />
+
     </Container>
   );
 };
