@@ -13,9 +13,28 @@ import {
 import AddIcon from "@mui/icons-material/Add";
 import SearchIcon from "@mui/icons-material/Search";
 import FilterListIcon from "@mui/icons-material/FilterList";
+import { useNavigate } from "react-router-dom";
+import Modal from "@mui/material/Modal";
+
+const style = {
+  position: "absolute",
+  top: "50%",
+  left: "50%",
+  transform: "translate(-50%, -50%)",
+  width: 400,
+  bgcolor: "background.paper",
+  border: "2px solid #000",
+  boxShadow: 24,
+  p: 4,
+};
 
 const AllCustomers = () => {
   const [search, setSearch] = useState("");
+  const [open, setOpen] = React.useState(false);
+  const handleOpen = () => setOpen(true);
+  const handleClose = () => setOpen(false);
+
+  const navigate = useNavigate();
   const customers = [
     {
       name: "Dilip Joshi",
@@ -68,6 +87,14 @@ const AllCustomers = () => {
       customer.mobile_number.includes(search)
   );
 
+  const handleStaff = () => {
+    navigate("/staf");
+  };
+
+  const handleCustomerBtn = () => {
+    navigate("/add/customer");
+  };
+
   return (
     <Box sx={{ padding: 2, maxWidth: "400px", margin: "auto" }}>
       <Typography variant="h6" align="center" gutterBottom>
@@ -102,10 +129,43 @@ const AllCustomers = () => {
           marginBottom: 2,
         }}
       >
-        <Button variant="contained" startIcon={<AddIcon />} color="primary">
+        <Button
+          variant="contained"
+          startIcon={<AddIcon />}
+          color="primary"
+          onClick={handleOpen}
+        >
           Add Group
         </Button>
-        <Button variant="contained" startIcon={<AddIcon />} color="secondary">
+
+        <Modal
+          open={open}
+          onClose={handleClose}
+          aria-labelledby="modal-modal-title"
+          aria-describedby="modal-modal-description"
+        >
+          <Box sx={style}>
+            <Typography id="modal-modal-title" variant="h6" component="h2">
+              Add a Group :
+              <TextField
+                hiddenLabel
+                id="filled-hidden-label-small"
+                variant="filled"
+                size="small"
+              />
+            </Typography>
+            <Typography
+              id="modal-modal-description"
+              sx={{ mt: 2 }}
+            ></Typography>
+          </Box>
+        </Modal>
+        <Button
+          variant="contained"
+          startIcon={<AddIcon />}
+          color="secondary"
+          onClick={handleStaff}
+        >
           Add Staff
         </Button>
       </Box>
@@ -148,9 +208,19 @@ const AllCustomers = () => {
         ))}
       </List>
 
-      <Button variant="contained" fullWidth sx={{ marginTop: 2 }}>
-        ADD CUSTOMER
-      </Button>
+      <Box display="flex" justifyContent="center" alignItems="center">
+        <Button
+          onClick={handleCustomerBtn}
+          variant="contained"
+          fullWidth
+          sx={{
+            marginTop: 2,
+            width: "22vh",
+          }}
+        >
+          ADD CUSTOMER
+        </Button>
+      </Box>
     </Box>
   );
 };
