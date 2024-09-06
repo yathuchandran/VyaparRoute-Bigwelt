@@ -15,7 +15,7 @@ import {
 import { GetAllGroup } from "../redux/action_api/productAction";
 import { useSelector, useDispatch } from "react-redux";
 import { Graygreen } from "../config";
-import { addGroupAction } from "../redux/action_api/Api";
+import { addCustomer, addGroupAction } from "../redux/action_api/Api";
 import Loader from "../components/Loder/Loder";
 import Swal from "sweetalert2";
 import { useNavigate } from "react-router-dom";
@@ -27,6 +27,18 @@ const AddCustomerForm = () => {
   // Fetch groups data from Redux store
   const { Allgroup } = useSelector((state) => state.allGroup);
   const { loading, error, isSucsess } = useSelector((state) => state.Addgroup);
+  const {
+    loading: load,
+    error: err,
+    isSucsess: suc,
+  } = useSelector((state) => state.AddCustomer);
+  const stafId = localStorage.getItem("stafId");
+  console.log(
+    load,
+    err,
+    suc,
+    "==================================================================="
+  );
 
   const [loader, setLoader] = useState(false);
   const [customerName, setCustomerName] = useState("");
@@ -104,18 +116,15 @@ const AddCustomerForm = () => {
     if (newGroupName.trim() === "") {
       return;
     }
-
     dispatch(addGroupAction(newGroupName.trim()));
     // setGroups((prevGroups) => [...prevGroups, newGroupName.trim()]);
-    // setSelectedGroupId(newGroup.group_id);
+    // setSelectedGroupId(newGroup.id);
     handleDialogClose();
   };
 
   // Save customer and reset form
   const handleSaveAndNew = () => {
-    const selectedGroup = groups.find(
-      (group) => group.group_id === selectedGroupId
-    );
+    const selectedGroup = groups.find((group) => group.id === selectedGroupId);
 
     console.log("Saving customer:", {
       customerName,
@@ -128,22 +137,28 @@ const AddCustomerForm = () => {
     setCustomerName("");
     setContactNumber("");
     setSelectedGroupId("");
-
-    navigate("/all/customers");
   };
 
   // Save customer without resetting the form
   const handleSaveCustomer = () => {
-    const selectedGroup = groups.find(
-      (group) => group.group_id === selectedGroupId
-    );
+    const selectedGroup = groups.find((group) => group.id === selectedGroupId);
 
-    console.log("Saving customer:", {
+    const formData = new FormData();
+    formData.set("fullname", customerName);
+    formData.set("mobile", contactNumber);
+    formData.set("group_id", selectedGroupId);
+    formData.set("staff_id", stafId || "");
+
+    dispatch(addCustomer(formData));
+
+    console.log("Saving customer:====", {
+      stafId,
       customerName,
       contactNumber,
-      group_id: selectedGroupId,
+      id: selectedGroupId,
       group_name: selectedGroup ? selectedGroup.group_name : "",
     });
+    // dispatch(addCustomer());
 
     setSuccessMessage("Customer saved successfully!");
     navigate("/all/customers");
@@ -226,11 +241,30 @@ const AddCustomerForm = () => {
             label="Group"
             renderValue={(selected) => {
               const selectedGroup = groups.find(
-                (group) => group.group_id === selected
+                (group) => group.id === selected
               );
               return selectedGroup
                 ? selectedGroup.group_name
                 : "Select a group";
+            }}
+            sx={{
+              width: "100%",
+              fontSize: "14px",
+              ".MuiSelect-select": {
+                // This targets the selected value area
+                textAlign: "left",
+                paddingLeft: "12px", // Adjust the padding as needed
+              },
+            }}
+            MenuProps={{
+              PaperProps: {
+                sx: {
+                  "& .MuiMenuItem-root": {
+                    fontSize: "0.875rem", // smaller font size
+                    padding: "4px 8px", // reduced padding
+                  },
+                },
+              },
             }}
           >
             <Button
@@ -245,7 +279,7 @@ const AddCustomerForm = () => {
               Add New Group
             </Button>
             {groups.map((group) => (
-              <MenuItem key={group.group_id} value={group.group_id}>
+              <MenuItem key={group.id} value={group.id}>
                 {group.group_name}
               </MenuItem>
             ))}
@@ -338,18 +372,6 @@ const AddCustomerForm = () => {
         </div>
       </div>
 
-      {/* Success Message Snackbar */}
-      {successMessage && (
-        <Snackbar
-          open={Boolean(successMessage)}
-          autoHideDuration={6000}
-          onClose={() => setSuccessMessage("")}
-        >
-          <Alert onClose={() => setSuccessMessage("")} severity="success">
-            {successMessage}
-          </Alert>
-        </Snackbar>
-      )}
       <Loader open={loader} />
     </Container>
   );
