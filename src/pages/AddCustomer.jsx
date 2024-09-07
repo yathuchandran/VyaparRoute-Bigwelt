@@ -93,10 +93,8 @@ console.log(newGroupName);
 
   }, [loading,isSucsess,error,suc]);
 
-  // Ref for the Add New Group button
   const addNewGroupRef = useRef(null);
 
-  // Fetch groups when component mounts
   useEffect(() => {
     dispatch(GetAllGroup());
   }, [dispatch]);
@@ -145,7 +143,6 @@ console.log(newGroupName);
     
   };
 
-  // Save customer without resetting the form
   const handleSaveCustomer = () => {
     setnameError(!customerName);
     setnumberError(!contactNumber);
@@ -155,7 +152,6 @@ console.log(newGroupName);
     const phoneNumberPattern = /^[0-9]{10}$/;
 
     if (!contactNumber || !phoneNumberPattern.test(contactNumber)) {
-      // setPhoneError(true);
       Swal.fire({
         title: "Invalid Phone Number",
         text: "Please enter a valid 10-digit phone number.",
@@ -198,8 +194,6 @@ console.log(newGroupName);
       >
         <Typography variant="h4">Add New Customer</Typography>
       </div>
-
-      {/* Import Customers Button */}
       <div
         style={{
           display: "flex",
