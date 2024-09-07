@@ -6,7 +6,6 @@ import ForgotPassword from "./components/login/ForgotPassword";
 import Signup from "./components/login/Signup";
 import SetPassword from "./components/login/SetPassword";
 import CategoryComp from "./components/Category/CategoryComp";
-
 import BusinessCard from "./components/Category/BuisnessCard";
 import AddProduct from "./pages/AddProduct";
 import StaffForm from "./pages/StafForm";

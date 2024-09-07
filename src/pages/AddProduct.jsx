@@ -13,18 +13,10 @@ import Swal from "sweetalert2";
 import CameraAltIcon from "@mui/icons-material/CameraAlt";
 import { useDispatch, useSelector } from "react-redux";
 import { CreateProduct } from "../redux/action_api/productAction";
-// import { createTheme, ThemeProvider } from "@mui/material/styles";
 import Grid from "@mui/system/Grid";
+import Loader from "../components/Loder/Loder";
 
-// const theme = createTheme({
-//   palette: {
-//     primary: {
-//       main: "#1976d2",
-//     },
-//   },
-// });
-
-const AddProduct = () => {
+const AddProduct = ({ onToggle }) => {
   const [open, setOpen] = useState(false);
   const [measureValue, setMeasureValue] = useState("");
   const fileInputRef = useRef(null);
@@ -39,19 +31,13 @@ const AddProduct = () => {
   const [addProductToExistingCustomer, setAddProductToExistingCustomer] =
     useState(false);
   const [imagePreviewUrl, setImagePreviewUrl] = useState(null);
+  const [sucsess, setsucsess] = useState(true);
 
+  console.log(sucsess);
 
   const dispatch = useDispatch();
   const { loading, error, product } = useSelector((state) => state.products);
-  const [loader, setLoader] = useState(false)
 
-  const handleLoaderClose = () => {
-    setLoader(false);
-  };
-  const handleLoaderOpen = () => {
-    setLoader(true);
-  };
-  
   const measureUnits = [
     "Numbers(NOS)",
     "Pieces(pcs)",
@@ -76,32 +62,32 @@ const AddProduct = () => {
       setMeasureValue(existingProduct.unit || "");
       setRecollectedEmptyProduct(existingProduct.recollected_empty || false);
       setAddProductToExistingCustomer(existingProduct.add_product || false);
-      // setImagePreviewUrl(existingProduct.imagePreviewUrl || null);
     }
 
     if (product) {
       Swal.fire({
         title: "Product added successfully!",
-        text: `Your Product has been successfully added.`,
         icon: "success",
         showConfirmButton: false,
         timer: 1500,
       });
+
       // Clear the local storage after a successful addition
       // localStorage.removeItem("productData");
       // onToggle(true);
+      setsucsess(false);
     }
 
     if (error) {
       Swal.fire({
         title: "Something went wrong!",
-        text: "There was an error. Please try again later.",
+        text: error,
         icon: "error",
         showConfirmButton: false,
         timer: 1500,
       });
     }
-  }, [product, error]);
+  }, [product, error, onToggle]);
 
   const handleClick = () => {
     setOpen(!open);
@@ -167,198 +153,207 @@ const AddProduct = () => {
   };
 
   return (
-    // <ThemeProvider theme={theme}>
-      <Container style={{ backgroundColor: "#fff5EA", padding: "16px" }}>
-        <Grid container justifyContent="center" alignItems="center">
-          <Grid item xs={12} sm={10} md={8} lg={6} sx={{ textAlign: "center" }}>
-            <h1>Add Product</h1>
-            <TextField
-              fullWidth
-              label="Item Name"
-              required
-              variant="outlined"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              InputProps={{
-                endAdornment: (
-                  <InputAdornment position="end">
-                    <IconButton onClick={handleClick}>
-                      {measureValue ? measureValue : "Select Unit"}
-                    </IconButton>
-                  </InputAdornment>
-                ),
-              }}
-              sx={{ mb: 2 }}
-            />
-
-            {open && (
-              <Box
-                sx={{
-                  backgroundColor: "black",
-                  width: "100%",
-                  position: "absolute",
-                  zIndex: 1,
-                  borderRadius: "4px",
-                }}
-              >
-                {measureUnits.map((elem, index) => (
-                  <p
-                    key={index}
-                    style={{
-                      margin: 0,
-                      padding: "5px 10px",
-                      color: "#fff",
-                      cursor: "pointer",
-                    }}
-                    onClick={() => handleValueSelect(elem)}
-                  >
-                    {elem}
-                  </p>
-                ))}
-              </Box>
-            )}
-
-            <TextField
-              fullWidth
-              label="Sale Price {RS}"
-              required
-              variant="outlined"
-              value={price}
-              onChange={(e) => setPrice(e.target.value)}
-              sx={{ mb: 2 }}
-            />
-
-            <TextField
-              fullWidth
-              value={amount}
-              onChange={(e) => setAmount(e.target.value)}
-              label="Discount Amount"
-              variant="outlined"
-              sx={{ mb: 2 }}
-            />
-
-            <Grid container spacing={2} alignItems="center" sx={{ mb: 2 }}>
-              <Grid item xs={6}>
-                <TextField
-                  value={gst}
-                  onChange={(e) => setGst(e.target.value)}
-                  fullWidth
-                  label="Enter GST%"
-                  variant="outlined"
-                />
-              </Grid>
-              <Grid item xs={6}>
-                <TextField
-                  fullWidth
-                  label="Enter CESS%"
-                  variant="outlined"
-                  value={cess}
-                  onChange={(e) => setCess(e.target.value)}
-                />
-              </Grid>
-            </Grid>
-
-            <TextField
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              fullWidth
-              label="Description"
-              variant="outlined"
-              sx={{ mb: 2 }}
-            />
-
-            <Grid container alignItems="center" sx={{ mb: 2 }}>
-              <FormControlLabel
-                control={
-                  <Checkbox
-                    checked={recollectedEmptyProduct}
-                    onChange={handleRecollectedChange}
-                  />
-                }
-                label={
-                  <span>
-                    Have you recollected empty product{" "}
-                    <span style={{ fontStyle: "italic" }}>
-                      (this cannot be changed afterwards)
-                    </span>
-                  </span>
-                }
-              />
-            </Grid>
-
-            <Grid container alignItems="center" sx={{ mb: 2 }}>
-              <FormControlLabel
-                control={
-                  <Checkbox
-                    checked={addProductToExistingCustomer}
-                    onChange={handleAddProductChange}
-                  />
-                }
-                label={<span>Add product to existing customer</span>}
-              />
-            </Grid>
-
-            <p>Product Media</p>
-
+    <div>
+      {loading ? (
+        <Loader />
+      ) : (
+        <Container style={{ backgroundColor: "#fff5EA", padding: "16px" }}>
+          <Grid container justifyContent="center" alignItems="center">
             <Grid
-              container
-              justifyContent="center"
-              alignItems="center"
-              sx={{ mb: 2 }}
+              item
+              xs={12}
+              sm={10}
+              md={8}
+              lg={6}
+              sx={{ textAlign: "center" }}
             >
-              <Box
-                sx={{
-                  height: { xs: "150px", md: "300px" },
-                  width: { xs: "150px", md: "300px" },
-                  border: "1px dashed #1976d2",
-                  borderRadius: "4px",
-                  display: "flex",
-                  justifyContent: "center",
-                  alignItems: "center",
-                  position: "relative",
+              <h1>Add Product</h1>
+              <TextField
+                fullWidth
+                label="Item Name"
+                required
+                variant="outlined"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                InputProps={{
+                  endAdornment: (
+                    <InputAdornment position="end">
+                      <IconButton onClick={handleClick}>
+                        {measureValue ? measureValue : "Select Unit"}
+                      </IconButton>
+                    </InputAdornment>
+                  ),
                 }}
-              >
-                <img
-                  src={imagePreviewUrl}
-                  alt="Preview"
-                  style={{
-                    display: imagePreviewUrl ? "block" : "none",
-                    height: "100%",
+                sx={{ mb: 2 }}
+              />
+
+              {open && (
+                <Box
+                  sx={{
+                    backgroundColor: "black",
                     width: "100%",
-                    objectFit: "cover",
+                    position: "absolute",
+                    zIndex: 1,
                     borderRadius: "4px",
                   }}
-                />
-                {!imagePreviewUrl && (
-                  <IconButton
-                    onClick={handleIconClick}
-                    sx={{
-                      position: "absolute",
-                      top: "50%",
-                      left: "50%",
-                      transform: "translate(-50%, -50%)",
-                      backgroundColor: "#fff",
-                    }}
-                  >
-                    <CameraAltIcon sx={{ fontSize: 40, color: "#1976d2" }} />
-                  </IconButton>
-                )}
-                <input
-                  type="file"
-                  ref={fileInputRef}
-                  onChange={handleFileChange}
-                  style={{ display: "none" }}
-                />
-              </Box>
-            </Grid>
+                >
+                  {measureUnits.map((elem, index) => (
+                    <p
+                      key={index}
+                      style={{
+                        margin: 0,
+                        padding: "5px 10px",
+                        color: "#fff",
+                        cursor: "pointer",
+                      }}
+                      onClick={() => handleValueSelect(elem)}
+                    >
+                      {elem}
+                    </p>
+                  ))}
+                </Box>
+              )}
 
-            <Button variant="contained" color="primary" onClick={handleSubmit}>
-              Submit
-            </Button>
+              <TextField
+                fullWidth
+                label="Sale Price {RS}"
+                required
+                variant="outlined"
+                value={price}
+                onChange={(e) => setPrice(e.target.value)}
+                sx={{ mb: 2 }}
+              />
+
+              <TextField
+                fullWidth
+                value={amount}
+                onChange={(e) => setAmount(e.target.value)}
+                label="Discount Amount"
+                variant="outlined"
+                sx={{ mb: 2 }}
+              />
+
+              <Grid container spacing={2} alignItems="center" sx={{ mb: 2 }}>
+                <Grid item xs={6}>
+                  <TextField
+                    value={gst}
+                    onChange={(e) => setGst(e.target.value)}
+                    fullWidth
+                    label="Enter GST%"
+                    variant="outlined"
+                  />
+                </Grid>
+                <Grid item xs={6}>
+                  <TextField
+                    fullWidth
+                    label="Enter CESS%"
+                    variant="outlined"
+                    value={cess}
+                    onChange={(e) => setCess(e.target.value)}
+                  />
+                </Grid>
+              </Grid>
+
+              <TextField
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                fullWidth
+                label="Description"
+                variant="outlined"
+                sx={{ mb: 2 }}
+              />
+
+              <Grid container alignItems="center" sx={{ mb: 2 }}>
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      checked={recollectedEmptyProduct}
+                      onChange={handleRecollectedChange}
+                    />
+                  }
+                  label={
+                    <span>
+                      Have you recollected empty product{" "}
+                      <span style={{ fontStyle: "italic" }}>
+                        (this cannot be changed afterwards)
+                      </span>
+                    </span>
+                  }
+                />
+              </Grid>
+
+              <Grid container alignItems="center" sx={{ mb: 2 }}>
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      checked={addProductToExistingCustomer}
+                      onChange={handleAddProductChange}
+                    />
+                  }
+                  label={<span>Add product to existing customer</span>}
+                />
+              </Grid>
+
+              <p>Product Media</p>
+
+              <Grid
+                container
+                justifyContent="center"
+                alignItems="center"
+                sx={{ mb: 2 }}
+              >
+                <Box
+                  sx={{
+                    height: { xs: "150px", md: "300px" },
+                    width: { xs: "150px", md: "300px" },
+                    border: "2px dashed gray",
+                    borderRadius: "12px",
+                    position: "relative",
+                    cursor: "pointer",
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    overflow: "hidden",
+                  }}
+                  onClick={handleIconClick}
+                >
+                  <CameraAltIcon sx={{ fontSize: 50 }} />
+                  {imagePreviewUrl && (
+                    <img
+                      src={imagePreviewUrl}
+                      alt="Preview"
+                      style={{
+                        position: "absolute",
+                        width: "100%",
+                        height: "100%",
+                        objectFit: "cover",
+                      }}
+                    />
+                  )}
+                  <input
+                    type="file"
+                    ref={fileInputRef}
+                    style={{ display: "none" }}
+                    onChange={handleFileChange}
+                    accept="image/*"
+                  />
+                </Box>
+              </Grid>
+
+              {sucsess && (
+                <Button
+                  variant="contained"
+                  color="primary"
+                  onClick={handleSubmit}
+                >
+                  Add
+                </Button>
+              )}
+            </Grid>
           </Grid>
-        </Grid>
-      </Container>
-    // </ThemeProvider>
+        </Container>
+      )}
+    </div>
   );
 };
 

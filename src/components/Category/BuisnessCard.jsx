@@ -16,15 +16,13 @@ import Loader from "../Loder/Loder";
 const BusinessCard = () => {
   // Step components
   const CreateBusiness = () => {
-    return (
-        <BusinessForm onToggle={handleToggle} />
-    );
+    return <BusinessForm onToggle={handleToggle} />;
   };
 
   const AddProducte = () => {
     return (
       <Typography variant="h5">
-        <AddProduct />
+        <AddProduct onToggle={handleToggle} />
       </Typography>
     );
   };
@@ -41,7 +39,7 @@ const BusinessCard = () => {
   const [activeStep, setActiveStep] = useState(0);
 
   const [showOption, setShowOption] = useState(false);
-  const [loader, setLoader] = useState(false)
+  const [loader, setLoader] = useState(false);
 
   const handleLoaderClose = () => {
     setLoader(false);
@@ -128,7 +126,6 @@ const BusinessCard = () => {
         )}
       </Box>
       <Loader open={loader} handleClose={handleLoaderClose} />
-
     </Box>
   );
 };

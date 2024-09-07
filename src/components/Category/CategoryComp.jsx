@@ -1,32 +1,28 @@
 import React, { useState } from "react";
 import PropTypes from "prop-types";
-import CategoryCard from "./CategoryCard";
-import "./category.css";
 import { useNavigate } from "react-router-dom";
+import "./category.css";
+
 const CategoryComp = ({ initialCards, cardsPerPage }) => {
-  // const [currentPage, setCurrentPage] = useState(1);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [selectedCategoryIndex, setSelectedCategoryIndex] = useState(null); // Keep track of the selected category
 
-  // const indexOfLastCard = currentPage * cardsPerPage;
-  // const indexOfFirstCard = indexOfLastCard - cardsPerPage;
-  // const currentCards = initialCards.slice(indexOfFirstCard, indexOfLastCard);
-
-  // const totalPages = Math.ceil(initialCards.length / cardsPerPage);
-
-  // const nextPage = () => {
-  //   if (currentPage < totalPages) {
-  //     setCurrentPage(currentPage + 1);
-  //   }
-  // };
-
-  // const prevPage = () => {
-  //   if (currentPage > 1) {
-  //     setCurrentPage(currentPage - 1);
-  //   }
-  // };
+  const indexOfLastCard = currentPage * cardsPerPage;
+  const indexOfFirstCard = indexOfLastCard - cardsPerPage;
+  const currentCards = initialCards.slice(indexOfFirstCard, indexOfLastCard);
 
   const navigate = useNavigate();
 
-  const HandleClick = () => {
+  // Handle when a category card is clicked
+  const handleCardClick = (category, index) => {
+    // Change the selected category's background color
+    setSelectedCategoryIndex(index);
+    // Save the selected category in localStorage (or any further processing)
+    localStorage.setItem("selectedCategory", JSON.stringify(category));
+  };
+
+  // Handle the "Next" button click
+  const handleNextClick = () => {
     navigate("/board");
   };
 
@@ -35,17 +31,32 @@ const CategoryComp = ({ initialCards, cardsPerPage }) => {
       <h1 className="title">
         <b>Select Business Category</b>
       </h1>
+
+      {/* Category cards */}
       <div className="card-group">
-        {initialCards.map((item, index) => (
-          <CategoryCard
+        {currentCards.map((item, index) => (
+          <div
             key={index}
-            imageSrc={item.imageSrc}
-            title={item.title}
-          />
+            className={`card ${
+              selectedCategoryIndex === index ? "selected-category" : ""
+            }`} // Add class dynamically
+            onClick={() => handleCardClick(item, index)}
+          >
+            <img
+              src={item.imageSrc}
+              className="card-img-top"
+              alt={item.title}
+            />
+            <div className="card-body">
+              <h5 className="card-title">{item.title}</h5>
+            </div>
+          </div>
         ))}
       </div>
+
+      {/* Pagination buttons (optional based on total pages) */}
       <div className="pagination-buttons">
-        <button className="next-button" onClick={HandleClick}>
+        <button className="next-button" onClick={handleNextClick}>
           Next
         </button>
       </div>
@@ -57,23 +68,24 @@ const CategoryComp = ({ initialCards, cardsPerPage }) => {
 CategoryComp.defaultProps = {
   initialCards: [
     {
-      imageSrc: "path/to/image1.jpg",
+      imageSrc:
+        "https://media.istockphoto.com/id/1299190286/video/businessman-walking-office-corridor.jpg?s=640x640&k=20&c=GSti6qOg3YgZRf96b1KOeicBJ5u2LSRT7Y1f7hwykUM=",
       title: "Tiffin Service",
     },
     {
-      imageSrc: "path/to/image2.jpg",
+      imageSrc: "./images/banner.png",
       title: "Milk Supplier",
     },
     {
-      imageSrc: "path/to/image3.jpg",
+      imageSrc: "https://example.com/water-supplier.jpg",
       title: "Water Supplier",
     },
     {
-      imageSrc: "path/to/image1.jpg",
+      imageSrc: "https://example.com/newspaper-delivery.jpg",
       title: "Newspaper Delivery",
     },
     {
-      imageSrc: "path/to/image2.jpg",
+      imageSrc: "https://example.com/bakery-business.jpg",
       title: "Bakery Business",
     },
   ],
@@ -87,7 +99,7 @@ CategoryComp.propTypes = {
       imageSrc: PropTypes.string.isRequired,
       title: PropTypes.string.isRequired,
     })
-  ),
+  ).isRequired,
   cardsPerPage: PropTypes.number,
 };
 

@@ -43,3 +43,37 @@ body {
   transform: scale(0.9);
   transition: opacity 500ms, transform 500ms;
 }
+
+/* category.css */
+.card-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 40px;
+  justify-content: center;
+}
+
+.card {
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  width: 400px;
+}
+
+.card:hover {
+  transform: scale(1.05);
+  box-shadow: 2px 2px 15px rgba(0, 0, 0, 0.2);
+}
+
+.card-body {
+  text-align: center;
+  padding: 10px;
+}
+
+/* Add styles for selected category */
+.selected-category {
+  border: 2px solid #79a3e7; /* Golden border for selected category */
+  background-color: #f7f5e6; /* Light yellow background */
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  transform: scale(1.05);
+}

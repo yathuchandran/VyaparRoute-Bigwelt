@@ -36,11 +36,9 @@ export const CreateProduct = (formdata) => async (dispatch) => {
       }
     );
 
-    console.log(data);
-
     dispatch({
       type: CREATE_PRODUCT_SUCCSESS,
-      payload: data.status,
+      payload: data.message,
     });
   } catch (error) {
     console.log(error);
@@ -159,16 +157,19 @@ export const allCustomersAction = () => async (dispatch) => {
   try {
     dispatch({ type: ALL_CUSTOMER_REQUEST });
 
-    const { data } = await axios.get("https://vr.w4u.in/manage/api/users/all", {
-      headers: {
-        "X-Api-Key": "8YUI3673DEB6F281A8F2E856902HJKU7",
-        "Content-Type": "multipart/form-data",
-      },
-    });
+    const { data } = await axios.get(
+      "https://vr.w4u.in/manage/api/users/customerall",
+      {
+        headers: {
+          "X-Api-Key": "8YUI3673DEB6F281A8F2E856902HJKU7",
+          "Content-Type": "multipart/form-data",
+        },
+      }
+    );
 
     dispatch({
       type: ALL_CUSTOMER_SUCCSESS,
-      payload: data.data,
+      payload: data.data.users,
     });
   } catch (error) {
     dispatch({

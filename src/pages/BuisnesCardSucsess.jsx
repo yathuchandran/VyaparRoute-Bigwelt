@@ -53,6 +53,8 @@ const BuisnesCardSucsess = () => {
       Math.min(prevActiveStep + 1, steps.length - 1)
     );
 
+    localStorage.clear();
+
     navigate("/home");
   };
 

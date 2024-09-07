@@ -49,12 +49,10 @@ const AddCustomerForm = () => {
   const [anchorEl, setAnchorEl] = useState(null);
   const [newGroupName, setNewGroupName] = useState("");
 
-<<<<<<< HEAD
-=======
+  console.log(newGroupName);
 
->>>>>>> 2a10fe2d5c6291a70cc6a48fd6e45cfc97bf46d9
   useEffect(() => {
-    if (loading === true) {
+    if (loading === true || load === true) {
       setLoader(true);
     } else {
       setLoader(false);
@@ -62,12 +60,11 @@ const AddCustomerForm = () => {
     if (isSucsess) {
       Swal.fire({
         title: "group added successfully!",
-        text: `Your group has been successfully added`,
+        text: "Your group has been successfully added",
         icon: "success",
         showConfirmButton: false,
         timer: 1500,
       });
-
       navigate("/all/customers");
     }
 
@@ -80,7 +77,26 @@ const AddCustomerForm = () => {
         timer: 1500,
       });
     }
-  }, [loading, isSucsess, error]);
+
+    if (suc) {
+      Swal.fire({
+        title: "Add Customer successfully!",
+        text: "Your Customer has been successfully added",
+        icon: "success",
+        showConfirmButton: false,
+        timer: 1500,
+      });
+    }
+    if (err) {
+      Swal.fire({
+        title: "Something went wrong!",
+        text: "There was an error. Please try again later.",
+        icon: "error",
+        showConfirmButton: false,
+        timer: 1500,
+      });
+    }
+  }, [loading, isSucsess, error, suc]);
 
   // Ref for the Add New Group button
   const addNewGroupRef = useRef(null);
@@ -128,26 +144,7 @@ const AddCustomerForm = () => {
 
   // Save customer and reset form
   const handleSaveAndNew = () => {
-<<<<<<< HEAD
     const selectedGroup = groups.find((group) => group.id === selectedGroupId);
-
-    console.log("Saving customer:", {
-      customerName,
-      contactNumber,
-      group_id: selectedGroupId,
-      group_name: selectedGroup ? selectedGroup.group_name : "",
-    });
-
-    setSuccessMessage("Customer saved successfully!");
-    setCustomerName("");
-    setContactNumber("");
-    setSelectedGroupId("");
-=======
-    const selectedGroup = groups.find(
-      (group) => group.id === selectedGroupId
-    );
-
->>>>>>> 2a10fe2d5c6291a70cc6a48fd6e45cfc97bf46d9
   };
 
   // Save customer without resetting the form
@@ -158,7 +155,7 @@ const AddCustomerForm = () => {
     formData.set("fullname", customerName);
     formData.set("mobile", contactNumber);
     formData.set("group_id", selectedGroupId);
-    formData.set("staff_id", stafId || "");
+    formData.set("staff_id", stafId ?? "");
 
     dispatch(addCustomer(formData));
 
@@ -383,26 +380,7 @@ const AddCustomerForm = () => {
         </div>
       </div>
 
-<<<<<<< HEAD
       <Loader open={loader} />
-=======
-      {/* Success Message Snackbar */}
-      {/* {successMessage && (
-        <Snackbar
-          open={Boolean(successMessage)}
-          autoHideDuration={6000}
-          onClose={() => setSuccessMessage("")}
-        >
-          <Alert onClose={() => setSuccessMessage("")} severity="success">
-            {successMessage}
-          </Alert>
-        </Snackbar>
-      )}
-      <Loader open={loader} />
-      )} */}
-            <Loader open={loader}  />
-
->>>>>>> 2a10fe2d5c6291a70cc6a48fd6e45cfc97bf46d9
     </Container>
   );
 };
