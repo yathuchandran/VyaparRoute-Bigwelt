@@ -49,7 +49,7 @@ const Login = () => {
             confirmButtonText: "OK",
           });
   
-          navigate("/otp-verification"); // Navigate to the OTP verification page
+          navigate("/home"); // Navigate to the OTP verification page
         } else {
           // Handle different status codes
           let iconType;
