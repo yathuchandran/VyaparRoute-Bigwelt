@@ -155,19 +155,20 @@ export const addStaffGroup =
     }
   };
 
-export const allCustomers = () => async (dispatch) => {
+export const allCustomersAction = () => async (dispatch) => {
   try {
     dispatch({ type: ALL_CUSTOMER_REQUEST });
 
     const { data } = await axios.get("https://vr.w4u.in/manage/api/users/all", {
       headers: {
         "X-Api-Key": "8YUI3673DEB6F281A8F2E856902HJKU7",
+        "Content-Type": "multipart/form-data",
       },
     });
 
     dispatch({
       type: ALL_CUSTOMER_SUCCSESS,
-      payload: data,
+      payload: data.data,
     });
   } catch (error) {
     dispatch({

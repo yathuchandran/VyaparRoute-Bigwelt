@@ -14,7 +14,7 @@ import BusinessForm from "./pages/CustomerName";
 import AllCustomer from "./pages/AllCustomers";
 import AddCustomerForm from "./pages/AddCustomer";
 import BuisnesCardSucsess from "./pages/BuisnesCardSucsess";
-import Temp from "./pages/Temp";
+import Banner from "./components/Dashboard/Banner";
 
 const App = () => {
   return (
@@ -40,8 +40,8 @@ const App = () => {
           <Route path="/staf" element={<StaffForm />} />
           <Route path="/all/customers" element={<AllCustomer />} />
           <Route path="/add/customer" element={<AddCustomerForm />} />
-          <Route path="/sucsess" element={<BuisnesCardSucsess />} />
-          <Route path="/tmp" element={<Temp />} />
+          <Route path="/success" element={<BuisnesCardSucsess />} />
+          <Route path="/home" element={<Banner />} />
         </Routes>
       </Router>
     </div>
@@ -49,3 +49,5 @@ const App = () => {
 };
 
 export default App;
+
+// host to upload
