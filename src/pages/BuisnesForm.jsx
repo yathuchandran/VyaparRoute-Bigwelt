@@ -7,7 +7,7 @@ import { business_details } from "../api/Api";
 import { Maroone, Graygreen } from "../config";
 import Loader from "../components/Loder/Loder";
 
-const BusinessForm = ({ onToggle }) => {
+const BusinessForm = ({ onToggle,categoryId }) => {
   const [businessName, setBusinessName] = useState("");
   const [businessAddress, setBusinessAddress] = useState("");
   const [city, setCity] = useState("");
@@ -15,7 +15,6 @@ const BusinessForm = ({ onToggle }) => {
   const [state, setState] = useState("");
   const [country, setCountry] = useState("");
   const [formErrors, setFormErrors] = useState({});
-  const category = localStorage.getItem("category");
     const [loader, setLoader] = useState(false)
 
   const handleLoaderClose = () => {
@@ -145,81 +144,81 @@ const BusinessForm = ({ onToggle }) => {
 
         if (businessName && businessAddress) {
       handleLoaderOpen();
-      localStorage.setItem("businessForm", businessName, businessAddress, city, pinCode, state, country, category);
+      localStorage.setItem("businessForm", businessName, businessAddress, city, pinCode, state, country, categoryId);
       onToggle(true);
-    // try {
-    //   const res = await business_details(
-    //     businessName,
-    //     businessAddress,
-    //     city,
-    //     pinCode,
-    //     state,
-    //     country,
-    //     category
-    //   );
+    try {
+      const res = await business_details(
+        businessName,
+        businessAddress,
+        city,
+        pinCode,
+        state,
+        country,
+        categoryId
+      );
 
-    //   if (
-    //     res.message === "Your Business Details  has been Added successfully"
-    //   ) {
-    //     Swal.fire({
-    //       title: "Success",
-    //       text: `${res.message}`,
-    //       icon: "success",
-    //       showConfirmButton: false,
-    //       timer: 1500,
-    //     });
+      if (
+        res.message === "Your Business Details  has been Added successfully"
+      ) {
+        Swal.fire({
+          title: "Success",
+          text: `${res.message}`,
+          icon: "success",
+          showConfirmButton: false,
+          timer: 1500,
+        });
 
-    //     // navigate("/select-category");
-    //     onToggle(true);
-    //   } else {
-    //     // Handle different status codes
-    //     let iconType;
-    //     let titleText;
+        // navigate("/select-category");
+        onToggle(true);
+      } else {
+        // Handle different status codes
+        let iconType;
+        let titleText;
 
-    //     switch (res.status) {
-    //       case 400:
-    //         iconType = "warning";
-    //         titleText = "Bad Request!";
-    //         break;
-    //       case 401:
-    //         iconType = "error";
-    //         titleText = "Unauthorized!";
-    //         break;
-    //       case 403:
-    //         iconType = "error";
-    //         titleText = "Forbidden!";
-    //         break;
-    //       case 404:
-    //         iconType = "error";
-    //         titleText = "Not Found!";
-    //         break;
-    //       case 500:
-    //         iconType = "error";
-    //         titleText = "Server Error!";
-    //         break;
-    //       default:
-    //         iconType = "info";
-    //         titleText = "Something went wrong!";
-    //     }
+        switch (res.status) {
+          case 400:
+            iconType = "warning";
+            titleText = "Bad Request!";
+            break;
+          case 401:
+            iconType = "error";
+            titleText = "Unauthorized!";
+            break;
+          case 403:
+            iconType = "error";
+            titleText = "Forbidden!";
+            break;
+          case 404:
+            iconType = "error";
+            titleText = "Not Found!";
+            break;
+          case 500:
+            iconType = "error";
+            titleText = "Server Error!";
+            break;
+          default:
+            iconType = "info";
+            titleText = "Something went wrong!";
+        }
 
-    //     Swal.fire({
-    //       title: titleText,
-    //       text: res?.response?.data?.message,
-    //       icon: iconType,
-    //       showConfirmButton: false,
-    //       timer: 1500,
-    //     });
-    //   }
-    // } catch (error) {
-    //   console.log(error);
-    //   Swal.fire({
-    //     title: "Error",
-    //     text: "Something went wrong. Please try again later.",
-    //     icon: "error",
-    //     showConfirmButton: false,
-    //     timer: 1500,
-    //   });
-    // }
+        Swal.fire({
+          title: titleText,
+          text: res?.response?.data?.message,
+          icon: iconType,
+          showConfirmButton: false,
+          timer: 1500,
+        });
+      }
+    } catch (error) {
+      console.log(error);
+      Swal.fire({
+        title: "Error",
+        text: "Something went wrong. Please try again later.",
+        icon: "error",
+        showConfirmButton: false,
+        timer: 1500,
+      });
+    }
     handleLoaderClose();
     }
  

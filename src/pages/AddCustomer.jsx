@@ -20,25 +20,15 @@ import Loader from "../components/Loder/Loder";
 import Swal from "sweetalert2";
 import { useNavigate } from "react-router-dom";
 
-const AddCustomerForm = () => {
+const AddCustomerForm = ({categoryId}) => {
   const dispatch = useDispatch();
-  const navigate = useNavigate();
+const navigate=useNavigate()
 
   // Fetch groups data from Redux store
   const { Allgroup } = useSelector((state) => state.allGroup);
   const { loading, error, isSucsess } = useSelector((state) => state.Addgroup);
-  const {
-    loading: load,
-    error: err,
-    isSucsess: suc,
-  } = useSelector((state) => state.AddCustomer);
-  const stafId = localStorage.getItem("stafId");
-  console.log(
-    load,
-    err,
-    suc,
-    "==================================================================="
-  );
+  const { loading:load, error : err, isSucsess:suc } = useSelector((state) => state.AddCustomer);
+  const stafId = localStorage.getItem("stafId")
 
   const [loader, setLoader] = useState(false);
   const [customerName, setCustomerName] = useState("");
@@ -49,12 +39,13 @@ const AddCustomerForm = () => {
   const [anchorEl, setAnchorEl] = useState(null);
   const [newGroupName, setNewGroupName] = useState("");
 
-<<<<<<< HEAD
-=======
+  const [nameError, setnameError] = useState(false);
+  const [numberError, setnumberError] = useState(false);
+console.log(newGroupName);
 
->>>>>>> 2a10fe2d5c6291a70cc6a48fd6e45cfc97bf46d9
+
   useEffect(() => {
-    if (loading === true) {
+    if (loading === true || load===true ) {
       setLoader(true);
     } else {
       setLoader(false);
@@ -67,8 +58,7 @@ const AddCustomerForm = () => {
         showConfirmButton: false,
         timer: 1500,
       });
-
-      navigate("/all/customers");
+    
     }
 
     if (error) {
@@ -80,12 +70,31 @@ const AddCustomerForm = () => {
         timer: 1500,
       });
     }
-  }, [loading, isSucsess, error]);
 
-  // Ref for the Add New Group button
+    if (suc) {
+      Swal.fire({
+        title: "Add Customer successfully!",
+        text: `Your Customer has been successfully added`,
+        icon: "success",
+        showConfirmButton: false,
+        timer: 1500,
+      });
+      navigate("/all/customers")
+    }
+    if (err) {
+      Swal.fire({
+        title: "Something went wrong!",
+        text: "There was an error. Please try again later.",
+        icon: "error",
+        showConfirmButton: false,
+        timer: 1500,
+      });
+    }
+
+  }, [loading,isSucsess,error,suc]);
+
   const addNewGroupRef = useRef(null);
 
-  // Fetch groups when component mounts
   useEffect(() => {
     dispatch(GetAllGroup());
   }, [dispatch]);
@@ -101,6 +110,7 @@ const AddCustomerForm = () => {
   const handleCustomerNameChange = (e) => setCustomerName(e.target.value);
   const handleContactNumberChange = (e) => setContactNumber(e.target.value);
 
+  
   // Handler for group selection
   const handleGroupChange = (event) => {
     const groupId = event.target.value;
@@ -116,7 +126,6 @@ const AddCustomerForm = () => {
 
   // Add new group handler
   const handleAddNewGroup = () => {
-    console.log("NEW GROUP ADDD");
     if (newGroupName.trim() === "") {
       return;
     }
@@ -128,51 +137,42 @@ const AddCustomerForm = () => {
 
   // Save customer and reset form
   const handleSaveAndNew = () => {
-<<<<<<< HEAD
-    const selectedGroup = groups.find((group) => group.id === selectedGroupId);
-
-    console.log("Saving customer:", {
-      customerName,
-      contactNumber,
-      group_id: selectedGroupId,
-      group_name: selectedGroup ? selectedGroup.group_name : "",
-    });
-
-    setSuccessMessage("Customer saved successfully!");
-    setCustomerName("");
-    setContactNumber("");
-    setSelectedGroupId("");
-=======
     const selectedGroup = groups.find(
       (group) => group.id === selectedGroupId
     );
-
->>>>>>> 2a10fe2d5c6291a70cc6a48fd6e45cfc97bf46d9
+    
   };
 
-  // Save customer without resetting the form
   const handleSaveCustomer = () => {
-    const selectedGroup = groups.find((group) => group.id === selectedGroupId);
+    setnameError(!customerName);
+    setnumberError(!contactNumber);
+    if (!contactNumber || !customerName) return;
+
+    if (!contactNumber) return;
+    const phoneNumberPattern = /^[0-9]{10}$/;
+
+    if (!contactNumber || !phoneNumberPattern.test(contactNumber)) {
+      Swal.fire({
+        title: "Invalid Phone Number",
+        text: "Please enter a valid 10-digit phone number.",
+        icon: "error",
+        showConfirmButton: false,
+        timer: 1500,
+      });
+      return;
+    }
+
+    const selectedGroup = groups.find(
+      (group) => group.id === selectedGroupId
+    );
 
     const formData = new FormData();
     formData.set("fullname", customerName);
     formData.set("mobile", contactNumber);
     formData.set("group_id", selectedGroupId);
-    formData.set("staff_id", stafId || "");
+    formData.set("staff_id", stafId ?? '');
 
     dispatch(addCustomer(formData));
-
-    console.log("Saving customer:====", {
-      stafId,
-      customerName,
-      contactNumber,
-      id: selectedGroupId,
-      group_name: selectedGroup ? selectedGroup.group_name : "",
-    });
-    // dispatch(addCustomer());
-
-    setSuccessMessage("Customer saved successfully!");
-    navigate("/all/customers");
   };
 
   const handleImportCustomers = () => {
@@ -194,8 +194,6 @@ const AddCustomerForm = () => {
       >
         <Typography variant="h4">Add New Customer</Typography>
       </div>
-
-      {/* Import Customers Button */}
       <div
         style={{
           display: "flex",
@@ -225,6 +223,7 @@ const AddCustomerForm = () => {
         {/* Customer Name Field */}
         <FormControl fullWidth style={{ marginBottom: "16px" }}>
           <TextField
+          error={nameError}
             label="Customer Name"
             value={customerName}
             onChange={handleCustomerNameChange}
@@ -235,8 +234,10 @@ const AddCustomerForm = () => {
         {/* Contact Number Field */}
         <FormControl fullWidth style={{ marginBottom: "16px" }}>
           <TextField
+          error={numberError}
             label="Contact Number"
             value={contactNumber}
+            type="Number"
             onChange={handleContactNumberChange}
             placeholder="Contact number"
           />
@@ -250,6 +251,7 @@ const AddCustomerForm = () => {
             value={selectedGroupId}
             onChange={handleGroupChange}
             label="Group"
+
             renderValue={(selected) => {
               const selectedGroup = groups.find(
                 (group) => group.id === selected
@@ -258,26 +260,22 @@ const AddCustomerForm = () => {
                 ? selectedGroup.group_name
                 : "Select a group";
             }}
-            sx={{
-              width: "100%",
-              fontSize: "14px",
-              ".MuiSelect-select": {
-                // This targets the selected value area
-                textAlign: "left",
-                paddingLeft: "12px", // Adjust the padding as needed
-              },
-            }}
+            sx={{ width: "100%",  fontSize: "14px", ".MuiSelect-select": { // This targets the selected value area
+              textAlign: 'left',
+              paddingLeft: '12px', // Adjust the padding as needed
+            }, }}
             MenuProps={{
               PaperProps: {
                 sx: {
-                  "& .MuiMenuItem-root": {
-                    fontSize: "0.875rem", // smaller font size
-                    padding: "4px 8px", // reduced padding
+                  '& .MuiMenuItem-root': {
+                    fontSize: '0.875rem', // smaller font size
+                    padding: '4px 8px', // reduced padding
                   },
                 },
               },
             }}
           >
+            
             <Button
               ref={addNewGroupRef}
               variant="outlined"
@@ -363,7 +361,7 @@ const AddCustomerForm = () => {
             onClick={handleSaveAndNew}
             style={{
               borderRadius: "8px",
-              backgroundColor: "#00BFA6",
+              backgroundColor: Graygreen,
               color: "#fff",
             }}
           >
@@ -374,7 +372,7 @@ const AddCustomerForm = () => {
             onClick={handleSaveCustomer}
             style={{
               borderRadius: "8px",
-              backgroundColor: "#00BFA6",
+              backgroundColor: Graygreen,
               color: "#fff",
             }}
           >
@@ -383,9 +381,6 @@ const AddCustomerForm = () => {
         </div>
       </div>
 
-<<<<<<< HEAD
-      <Loader open={loader} />
-=======
       {/* Success Message Snackbar */}
       {/* {successMessage && (
         <Snackbar
@@ -397,12 +392,9 @@ const AddCustomerForm = () => {
             {successMessage}
           </Alert>
         </Snackbar>
-      )}
-      <Loader open={loader} />
       )} */}
             <Loader open={loader}  />
 
->>>>>>> 2a10fe2d5c6291a70cc6a48fd6e45cfc97bf46d9
     </Container>
   );
 };
