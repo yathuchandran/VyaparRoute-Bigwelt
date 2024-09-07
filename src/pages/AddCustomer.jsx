@@ -18,15 +18,17 @@ import { Graygreen } from "../config";
 import { addCustomer, addGroupAction } from "../redux/action_api/Api";
 import Loader from "../components/Loder/Loder";
 import Swal from "sweetalert2";
-const AddCustomerForm = () => {
+import { useNavigate } from "react-router-dom";
+
+const AddCustomerForm = ({categoryId}) => {
   const dispatch = useDispatch();
+const navigate=useNavigate()
 
   // Fetch groups data from Redux store
   const { Allgroup } = useSelector((state) => state.allGroup);
   const { loading, error, isSucsess } = useSelector((state) => state.Addgroup);
   const { loading:load, error : err, isSucsess:suc } = useSelector((state) => state.AddCustomer);
   const stafId = localStorage.getItem("stafId")
-console.log(load,err,suc,"===================================================================");
 
   const [loader, setLoader] = useState(false);
   const [customerName, setCustomerName] = useState("");
@@ -37,11 +39,13 @@ console.log(load,err,suc,"======================================================
   const [anchorEl, setAnchorEl] = useState(null);
   const [newGroupName, setNewGroupName] = useState("");
 
+  const [nameError, setnameError] = useState(false);
+  const [numberError, setnumberError] = useState(false);
 console.log(newGroupName);
 
 
   useEffect(() => {
-    if (loading === true) {
+    if (loading === true || load===true ) {
       setLoader(true);
     } else {
       setLoader(false);
@@ -54,6 +58,7 @@ console.log(newGroupName);
         showConfirmButton: false,
         timer: 1500,
       });
+    
     }
 
     if (error) {
@@ -66,7 +71,27 @@ console.log(newGroupName);
       });
     }
 
-  }, [loading,isSucsess,error]);
+    if (suc) {
+      Swal.fire({
+        title: "Add Customer successfully!",
+        text: `Your Customer has been successfully added`,
+        icon: "success",
+        showConfirmButton: false,
+        timer: 1500,
+      });
+      navigate("/all/customers")
+    }
+    if (err) {
+      Swal.fire({
+        title: "Something went wrong!",
+        text: "There was an error. Please try again later.",
+        icon: "error",
+        showConfirmButton: false,
+        timer: 1500,
+      });
+    }
+
+  }, [loading,isSucsess,error,suc]);
 
   // Ref for the Add New Group button
   const addNewGroupRef = useRef(null);
@@ -103,7 +128,6 @@ console.log(newGroupName);
 
   // Add new group handler
   const handleAddNewGroup = () => {
-    console.log("NEW GROUP ADDD");
     if (newGroupName.trim() === "") {
       return;
     }
@@ -123,6 +147,25 @@ console.log(newGroupName);
 
   // Save customer without resetting the form
   const handleSaveCustomer = () => {
+    setnameError(!customerName);
+    setnumberError(!contactNumber);
+    if (!contactNumber || !customerName) return;
+
+    if (!contactNumber) return;
+    const phoneNumberPattern = /^[0-9]{10}$/;
+
+    if (!contactNumber || !phoneNumberPattern.test(contactNumber)) {
+      // setPhoneError(true);
+      Swal.fire({
+        title: "Invalid Phone Number",
+        text: "Please enter a valid 10-digit phone number.",
+        icon: "error",
+        showConfirmButton: false,
+        timer: 1500,
+      });
+      return;
+    }
+
     const selectedGroup = groups.find(
       (group) => group.id === selectedGroupId
     );
@@ -131,19 +174,9 @@ console.log(newGroupName);
     formData.set("fullname", customerName);
     formData.set("mobile", contactNumber);
     formData.set("group_id", selectedGroupId);
-    formData.set("staff_id", stafId||'');
+    formData.set("staff_id", stafId ?? '');
 
     dispatch(addCustomer(formData));
-
-    console.log("Saving customer:====", {stafId,
-      customerName,
-      contactNumber,
-      id: selectedGroupId,
-      group_name: selectedGroup ? selectedGroup.group_name : "",
-    });
-    // dispatch(addCustomer());
-
-    setSuccessMessage("Customer saved successfully!");
   };
 
   const handleImportCustomers = () => {
@@ -196,6 +229,7 @@ console.log(newGroupName);
         {/* Customer Name Field */}
         <FormControl fullWidth style={{ marginBottom: "16px" }}>
           <TextField
+          error={nameError}
             label="Customer Name"
             value={customerName}
             onChange={handleCustomerNameChange}
@@ -206,8 +240,10 @@ console.log(newGroupName);
         {/* Contact Number Field */}
         <FormControl fullWidth style={{ marginBottom: "16px" }}>
           <TextField
+          error={numberError}
             label="Contact Number"
             value={contactNumber}
+            type="Number"
             onChange={handleContactNumberChange}
             placeholder="Contact number"
           />
@@ -331,7 +367,7 @@ console.log(newGroupName);
             onClick={handleSaveAndNew}
             style={{
               borderRadius: "8px",
-              backgroundColor: "#00BFA6",
+              backgroundColor: Graygreen,
               color: "#fff",
             }}
           >
@@ -342,7 +378,7 @@ console.log(newGroupName);
             onClick={handleSaveCustomer}
             style={{
               borderRadius: "8px",
-              backgroundColor: "#00BFA6",
+              backgroundColor: Graygreen,
               color: "#fff",
             }}
           >

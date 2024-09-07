@@ -1,6 +1,8 @@
 import React from "react";
 // import styled from "styled-components";
 const CategoryCard = ({ imageSrc, title }) => {
+  console.log(imageSrc, title);
+  
   return (
     // <Wrapper>
     <div>

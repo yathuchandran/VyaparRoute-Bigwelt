@@ -35,7 +35,7 @@ export const addCustomer =(formData )=>async(dispatch)=>{
   
   try {
     dispatch({type:ADD_CUSTOMER_REQUEST})
-    const {data}=await axios.post(`${baseUrlApi}users/add/`,formData, {
+    const {data}=await axios.post(`${baseUrlApi}users/customeradd/`,formData, {
             headers: {
               "X-Api-Key": "8YUI3673DEB6F281A8F2E856902HJKU7",
               "Content-Type": "multipart/form-data",
