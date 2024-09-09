@@ -16,8 +16,7 @@ const Login = () => {
   const [emailError, setEmailError] = useState(false);
   const [passwordError, setPasswordError] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-  const [loader, setLoader] = useState(false)
-
+  const [loader, setLoader] = useState(false);
 
   const handleLoaderClose = () => {
     setLoader(false);
@@ -36,25 +35,25 @@ const Login = () => {
       handleLoaderOpen();
       try {
         const res = await getLogin({ name: sLoginName, password: sPassword });
-  
+
         if (res.message === "OTP Sent Successfully.") {
           localStorage.setItem("UserName", sLoginName);
           localStorage.setItem("userId", 1234);
           localStorage.setItem("Mobile", sPassword);
-  
+
           Swal.fire({
             title: "Login Successful!",
             text: `OTP has been sent to your registered ${sPassword}.`,
             icon: "success",
             confirmButtonText: "OK",
           });
-  
-          navigate("/home"); // Navigate to the OTP verification page
+
+          navigate("/otp-verification"); // Navigate to the OTP verification page
         } else {
           // Handle different status codes
           let iconType;
           let titleText;
-  
+
           switch (res.status) {
             case 400:
               iconType = "warning";
@@ -80,7 +79,7 @@ const Login = () => {
               iconType = "info";
               titleText = "Something went wrong!";
           }
-  
+
           Swal.fire({
             title: titleText,
             text: res?.response?.data?.message,
@@ -284,7 +283,6 @@ const Login = () => {
         </Box>
       </Grid>
       <Loader open={loader} handleClose={handleLoaderClose} />
-
     </Grid>
   );
 };
