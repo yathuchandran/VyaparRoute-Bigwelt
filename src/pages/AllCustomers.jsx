@@ -9,6 +9,7 @@ import {
   ListItem,
   ListItemText,
   Grid,
+  InputAdornment,
 } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import SearchIcon from "@mui/icons-material/Search";
@@ -16,9 +17,9 @@ import FilterListIcon from "@mui/icons-material/FilterList";
 import { useNavigate } from "react-router-dom";
 import Modal from "@mui/material/Modal";
 import { Graygreen } from "../config";
-
 import { useSelector, useDispatch } from "react-redux";
 import { allCustomersAction } from "../redux/action_api/productAction";
+
 const style = {
   position: "absolute",
   top: "50%",
@@ -41,65 +42,20 @@ const AllCustomers = () => {
     (state) => state.allGroup
   );
 
-  console.log(allCustomers);
-
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
   useEffect(() => {
     dispatch(allCustomersAction());
   }, [dispatch]);
-  const customers = [
-    {
-      name: "Dilip Joshi",
-      amount: "₹4,000",
-      status: "-6",
-      group: "South Admin Group",
-      mobile_number: "9876543210",
-    },
-    {
-      name: "Excel",
-      amount: "₹1,364",
-      status: "-2",
-      group: "Admin Group",
-      mobile_number: "123",
-    },
-    {
-      name: "Abc",
-      amount: "₹364",
-      status: "0",
-      group: "Other Group",
-      mobile_number: "456",
-    },
-    {
-      name: "Ram",
-      amount: "₹67",
-      status: "-5",
-      group: "Owner Group",
-      mobile_number: "789",
-    },
-    {
-      name: "XYZ",
-      amount: "₹0",
-      status: "0",
-      group: "Group Group",
-      mobile_number: "555",
-    },
-    {
-      name: "CCD",
-      amount: "₹0",
-      status: "0",
-      group: "General Group",
-      mobile_number: "111",
-    },
-  ];
 
   // Search filter logic for name or mobile number
-  const filtered = customers.filter(
-    (customer) =>
-      customer.name.toLowerCase().includes(search.toLowerCase()) ||
-      customer.mobile_number.includes(search)
-  );
+  const filtered =
+    allCustomers?.filter(
+      (customer) =>
+        customer?.fullname?.toLowerCase().includes(search.toLowerCase()) ||
+        customer?.mobile?.includes(search)
+    ) || [];
 
   const handleStaff = () => {
     navigate("/staf");
@@ -122,19 +78,23 @@ const AllCustomers = () => {
       <Box sx={{ display: "flex", alignItems: "center", marginBottom: 2 }}>
         <TextField
           value={search}
-          onChange={(e) => {
-            setSearch(e.target.value);
-          }}
+          onChange={(e) => setSearch(e.target.value)}
           variant="outlined"
           placeholder="Search Customer via Name / Mobile number"
           size="small"
           fullWidth
           InputProps={{
-            startAdornment: <SearchIcon />,
+            startAdornment: (
+              <InputAdornment position="start">
+                <SearchIcon />
+              </InputAdornment>
+            ),
             endAdornment: (
-              <IconButton>
-                <FilterListIcon />
-              </IconButton>
+              <InputAdornment position="end">
+                <IconButton>
+                  <FilterListIcon />
+                </IconButton>
+              </InputAdornment>
             ),
           }}
         />
@@ -164,20 +124,19 @@ const AllCustomers = () => {
         >
           <Box sx={style}>
             <Typography id="modal-modal-title" variant="h6" component="h2">
-              Add a Group :
-              <TextField
-                hiddenLabel
-                id="filled-hidden-label-small"
-                variant="filled"
-                size="small"
-              />
+              Add a Group
             </Typography>
-            <Typography
-              id="modal-modal-description"
+            <TextField
+              hiddenLabel
+              id="filled-hidden-label-small"
+              variant="filled"
+              size="small"
+              fullWidth
               sx={{ mt: 2 }}
-            ></Typography>
+            />
           </Box>
         </Modal>
+
         <Button
           variant="contained"
           startIcon={<AddIcon />}
@@ -189,7 +148,7 @@ const AllCustomers = () => {
       </Box>
 
       <List>
-        {allCustomers?.users.map((customer, index) => (
+        {filtered.map((customer, index) => (
           <ListItem
             key={index}
             sx={{
@@ -201,9 +160,9 @@ const AllCustomers = () => {
           >
             <Grid container alignItems="center">
               <img
-                src="/images/loginhome.jpg"
+                src={customer.user_image}
                 alt=""
-                style={{ width: "5vh", height: "" }}
+                style={{ width: "5vh", height: "5vh", borderRadius: "50%" }}
               />
               <Grid item xs={6}>
                 <ListItemText
@@ -222,7 +181,13 @@ const AllCustomers = () => {
               <Grid item xs={3} align="right">
                 <Typography
                   variant="body2"
-                  color={customer.status < 0 ? "red" : "green"}
+                  color={
+                    customer.status < 0
+                      ? "red"
+                      : customer.status === 0
+                      ? "black"
+                      : "green"
+                  }
                 >
                   {customer.status}
                 </Typography>

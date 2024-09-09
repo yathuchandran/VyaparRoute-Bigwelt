@@ -1,91 +1,70 @@
 import React, { useEffect, useState } from "react";
 import PropTypes from "prop-types";
 import { useNavigate } from "react-router-dom";
-import { cateList } from "../../api/Api";
+import "./category.css";
+import { useDispatch, useSelector } from "react-redux";
+import { ALLCategoryAction } from "../../redux/action_api/productAction";
 
-const CategoryComp = ({ cardsPerPage }) => {
-  const [categories, setCategories] = useState([]); // State to store fetched categories
+const CategoryComp = ({ initialCards, cardsPerPage }) => {
+  const dispatch = useDispatch();
+  const { loading, error, allCategory } = useSelector(
+    (state) => state.allGroup
+  );
 
-  useEffect(() => {
-    const fetchCategories = async () => {
-      try {
-        const res = await cateList();
-        setCategories(res.data.business_category); // Store fetched data in state
-      } catch (error) {
-        console.log(error);
-      }
-    };
-    fetchCategories();
-  }, []);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [selectedCategoryIndex, setSelectedCategoryIndex] = useState(null); // Keep track of the selected category
+
+  const indexOfLastCard = currentPage * cardsPerPage;
+  const indexOfFirstCard = indexOfLastCard - cardsPerPage;
 
   const navigate = useNavigate();
 
-  const handleCardClick = (id, name) => {
-    navigate(`/board?id=${id}&name=${name}`);
-    console.log(id, name,"id, name==========================");
-    
+  useEffect(() => {
+    dispatch(ALLCategoryAction());
+  }, [dispatch]);
+
+  // Handle when a category card is clicked
+  const handleCardClick = (category, index) => {
+    // Change the selected category's background color
+    setSelectedCategoryIndex(index);
+    // Save the selected category in localStorage (or any further processing)
+    localStorage.setItem("selectedCategory", JSON.stringify(category));
   };
 
-  const styles = {
-    container: {
-      textAlign: "center",
-      paddingBottom: "20px",
-    },
-    cardGroup: {
-      display: "flex",
-      flexWrap: "wrap",
-      justifyContent: "center",
-      gap: "20px",
-    },
-    card: {
-      width: "140px", // Adjust the width
-      height: "130px", // Adjust the height
-      border: "1px solid #ddd",
-      borderRadius: "10px",
-      overflow: "hidden",
-      display: "flex",
-      flexDirection: "column",
-      alignItems: "center",
-      boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
-      cursor: "pointer", // Add cursor pointer to indicate clickability
-    },
-    image: {
-      width: "90%",
-      height: "90px", // Adjust the image height
-      objectFit: "cover", // Ensure the image fits nicely
-    },
-    title: {
-      margin: "10px 0",
-      fontSize: "16px",
-      fontWeight: "bold",
-      textAlign: "center",
-    },
+  // Handle the "Next" button click
+  const handleNextClick = () => {
+    navigate("/board");
   };
 
   return (
     <div>
-      <h1 style={styles.container}>
+      <h1 className="title">
         <b>Select Business Category</b>
       </h1>
-      <div style={styles.cardGroup}>
-        {categories.length > 0 ? (
-          categories.map((item, index) => (
-            <div
-              key={index}
-              style={styles.card}
-              onClick={() => handleCardClick(item.id, item.name)} // Attach click event
-            >
-              <img
-                src={item.image || "path/to/placeholder.jpg"}
-                alt={item.name}
-                style={styles.image}
-              />
-              <h3 style={styles.title}>{item.name}</h3>
+
+      {/* Category cards */}
+      <div className="card-group">
+        {allCategory?.map((item, index) => (
+          <div
+            key={index}
+            className={`card ${
+              selectedCategoryIndex === index ? "selected-category" : ""
+            }`} // Add class dynamically
+            onClick={() => handleCardClick(item, index)}
+          >
+            <img src={item.image} className="card-img-top" alt={item.name} />
+            <div className="card-body">
+              <h5 className="card-title">{item.name}</h5>
             </div>
-          ))
-        ) : (
-          <p>Loading categories...</p>
-        )}
+          </div>
+        ))}
+      </div>
+
+      {/* Pagination buttons (optional based on total pages) */}
+      <div className="pagination-buttons">
+        <button className="next-button" onClick={handleNextClick}>
+          Next
+        </button>
       </div>
     </div>
   );
@@ -93,6 +72,12 @@ const CategoryComp = ({ cardsPerPage }) => {
 
 // Define propTypes
 CategoryComp.propTypes = {
+  initialCards: PropTypes.arrayOf(
+    PropTypes.shape({
+      imageSrc: PropTypes.string.isRequired,
+      title: PropTypes.string.isRequired,
+    })
+  ).isRequired,
   cardsPerPage: PropTypes.number,
 };
 

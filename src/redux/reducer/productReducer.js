@@ -2,11 +2,16 @@ import {
   ADD_STAFF_FAILURE,
   ADD_STAFF_REQUEST,
   ADD_STAFF_SUCCSESS,
+  ALL_CATEGORY_FAILURE,
+  ALL_CATEGORY_REQUEST,
+  ALL_CATEGORY_SUCCSESS,
   ALL_CUSTOMER_FAILURE,
   ALL_CUSTOMER_REQUEST,
   ALL_CUSTOMER_SUCCSESS,
+  CLEAR_ERROR,
   CREATE_PRODUCT_FAILURE,
   CREATE_PRODUCT_REQUEST,
+  CREATE_PRODUCT_RESET,
   CREATE_PRODUCT_SUCCSESS,
   FETCH_FAILURE,
   FETCH_REQUEST,
@@ -16,14 +21,14 @@ import {
   STAFF_GROUP_SUCCSESS,
 } from "../constant/productConstant";
 
-// const initialState = {
-//   loading: false,
-//   product: [],
-//   error: null,
-// };
-
+const initialState = {
+  loading: false,
+  success: false, // or whatever state is relevant to show success
+  product: null,
+  error: null,
+};
 // Reducer function
-export const PrdReducer = (state = { product: [] }, action) => {
+export const PrdReducer = (state = initialState, action) => {
   switch (action.type) {
     case CREATE_PRODUCT_REQUEST:
       return {
@@ -36,6 +41,7 @@ export const PrdReducer = (state = { product: [] }, action) => {
         ...state, // Spread the current state
         loading: false, // Set loading to false
         product: action.payload, // Update the product with the payload
+        isSucsess: action.payload.status,
       };
 
     case CREATE_PRODUCT_FAILURE:
@@ -43,6 +49,15 @@ export const PrdReducer = (state = { product: [] }, action) => {
         ...state, // Spread the current state
         loading: false, // Set loading to false
         error: action.payload, // Update the error with the payload
+      };
+
+    case CREATE_PRODUCT_RESET:
+      return { ...initialState };
+
+    case CLEAR_ERROR:
+      return {
+        ...state,
+        error: null,
       };
 
     default:
@@ -82,6 +97,7 @@ export const FetchAll = (state = {}, action) => {
   switch (action.type) {
     case FETCH_REQUEST:
     case ALL_CUSTOMER_REQUEST:
+    case ALL_CATEGORY_REQUEST:
       return {
         loading: true,
         ...state,
@@ -101,8 +117,16 @@ export const FetchAll = (state = {}, action) => {
         allCustomers: action.payload,
       };
 
+    case ALL_CATEGORY_SUCCSESS:
+      return {
+        loading: false,
+        allCategory: action.payload,
+        ...state,
+      };
+
     case FETCH_FAILURE:
     case ALL_CUSTOMER_FAILURE:
+    case ALL_CATEGORY_FAILURE:
       return {
         loading: false,
         error: action.payload,

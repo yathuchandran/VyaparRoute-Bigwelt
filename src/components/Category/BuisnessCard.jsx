@@ -15,22 +15,19 @@ import Loader from "../Loder/Loder";
 import { useSearchParams } from "react-router-dom";
 
 const BusinessCard = () => {
-
   const [searchParams] = useSearchParams(); // Use useSearchParams to get the params
   const id = searchParams.get("id"); // Extract id from URL
   const name = searchParams.get("name"); // Extract name from URL
 
   // Step components
   const CreateBusiness = () => {
-    return (
-        <BusinessForm onToggle={handleToggle} categoryId={id} categoryName={name} />
-    );
+    return <BusinessForm onToggle={handleToggle} />;
   };
 
   const AddProducte = () => {
     return (
       <Typography variant="h5">
-        <AddProduct   categoryId={id} categoryName={name}/>
+        <AddProduct onToggle={handleToggle} />
       </Typography>
     );
   };
@@ -38,7 +35,7 @@ const BusinessCard = () => {
   const AddCustomer = () => {
     return (
       <Typography variant="h5">
-        <AddCustomerForm   categoryId={id} categoryName={name}/>
+        <AddCustomerForm categoryId={id} categoryName={name} />
       </Typography>
     );
   };
@@ -47,7 +44,7 @@ const BusinessCard = () => {
   const [activeStep, setActiveStep] = useState(0);
 
   const [showOption, setShowOption] = useState(false);
-  const [loader, setLoader] = useState(false)
+  const [loader, setLoader] = useState(false);
 
   const handleLoaderClose = () => {
     setLoader(false);
@@ -134,7 +131,6 @@ const BusinessCard = () => {
         )}
       </Box>
       <Loader open={loader} handleClose={handleLoaderClose} />
-
     </Box>
   );
 };
