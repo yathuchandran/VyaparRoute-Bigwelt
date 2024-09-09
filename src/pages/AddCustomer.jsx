@@ -20,15 +20,19 @@ import Loader from "../components/Loder/Loder";
 import Swal from "sweetalert2";
 import { useNavigate } from "react-router-dom";
 
-const AddCustomerForm = ({categoryId}) => {
+const AddCustomerForm = ({ categoryId }) => {
   const dispatch = useDispatch();
-const navigate=useNavigate()
+  const navigate = useNavigate();
 
   // Fetch groups data from Redux store
   const { Allgroup } = useSelector((state) => state.allGroup);
   const { loading, error, isSucsess } = useSelector((state) => state.Addgroup);
-  const { loading:load, error : err, isSucsess:suc } = useSelector((state) => state.AddCustomer);
-  const stafId = localStorage.getItem("stafId")
+  const {
+    loading: load,
+    error: err,
+    isSucsess: suc,
+  } = useSelector((state) => state.AddCustomer);
+  const stafId = localStorage.getItem("stafId");
 
   const [loader, setLoader] = useState(false);
   const [customerName, setCustomerName] = useState("");
@@ -41,11 +45,10 @@ const navigate=useNavigate()
 
   const [nameError, setnameError] = useState(false);
   const [numberError, setnumberError] = useState(false);
-console.log(newGroupName);
-
+  console.log(newGroupName);
 
   useEffect(() => {
-    if (loading === true || load===true ) {
+    if (loading === true || load === true) {
       setLoader(true);
     } else {
       setLoader(false);
@@ -58,7 +61,6 @@ console.log(newGroupName);
         showConfirmButton: false,
         timer: 1500,
       });
-    
     }
 
     if (error) {
@@ -79,7 +81,7 @@ console.log(newGroupName);
         showConfirmButton: false,
         timer: 1500,
       });
-      navigate("/all/customers")
+      navigate("/all/customers");
     }
     if (err) {
       Swal.fire({
@@ -90,8 +92,7 @@ console.log(newGroupName);
         timer: 1500,
       });
     }
-
-  }, [loading,isSucsess,error,suc]);
+  }, [loading, isSucsess, error, suc]);
 
   const addNewGroupRef = useRef(null);
 
@@ -110,7 +111,6 @@ console.log(newGroupName);
   const handleCustomerNameChange = (e) => setCustomerName(e.target.value);
   const handleContactNumberChange = (e) => setContactNumber(e.target.value);
 
-  
   // Handler for group selection
   const handleGroupChange = (event) => {
     const groupId = event.target.value;
@@ -137,10 +137,7 @@ console.log(newGroupName);
 
   // Save customer and reset form
   const handleSaveAndNew = () => {
-    const selectedGroup = groups.find(
-      (group) => group.id === selectedGroupId
-    );
-    
+    const selectedGroup = groups.find((group) => group.id === selectedGroupId);
   };
 
   const handleSaveCustomer = () => {
@@ -162,15 +159,14 @@ console.log(newGroupName);
       return;
     }
 
-    const selectedGroup = groups.find(
-      (group) => group.id === selectedGroupId
-    );
+    const selectedGroup = groups.find((group) => group.id === selectedGroupId);
 
     const formData = new FormData();
     formData.set("fullname", customerName);
     formData.set("mobile", contactNumber);
-    formData.set("group_id", selectedGroupId);
-    formData.set("staff_id", stafId ?? '');
+    formData.set("group_id", "1");
+    formData.set("staff_id", stafId ?? "");
+    formData.set("category_id", stafId ?? "1");
 
     dispatch(addCustomer(formData));
   };
@@ -223,7 +219,7 @@ console.log(newGroupName);
         {/* Customer Name Field */}
         <FormControl fullWidth style={{ marginBottom: "16px" }}>
           <TextField
-          error={nameError}
+            error={nameError}
             label="Customer Name"
             value={customerName}
             onChange={handleCustomerNameChange}
@@ -234,7 +230,7 @@ console.log(newGroupName);
         {/* Contact Number Field */}
         <FormControl fullWidth style={{ marginBottom: "16px" }}>
           <TextField
-          error={numberError}
+            error={numberError}
             label="Contact Number"
             value={contactNumber}
             type="Number"
@@ -251,7 +247,6 @@ console.log(newGroupName);
             value={selectedGroupId}
             onChange={handleGroupChange}
             label="Group"
-
             renderValue={(selected) => {
               const selectedGroup = groups.find(
                 (group) => group.id === selected
@@ -260,22 +255,26 @@ console.log(newGroupName);
                 ? selectedGroup.group_name
                 : "Select a group";
             }}
-            sx={{ width: "100%",  fontSize: "14px", ".MuiSelect-select": { // This targets the selected value area
-              textAlign: 'left',
-              paddingLeft: '12px', // Adjust the padding as needed
-            }, }}
+            sx={{
+              width: "100%",
+              fontSize: "14px",
+              ".MuiSelect-select": {
+                // This targets the selected value area
+                textAlign: "left",
+                paddingLeft: "12px", // Adjust the padding as needed
+              },
+            }}
             MenuProps={{
               PaperProps: {
                 sx: {
-                  '& .MuiMenuItem-root': {
-                    fontSize: '0.875rem', // smaller font size
-                    padding: '4px 8px', // reduced padding
+                  "& .MuiMenuItem-root": {
+                    fontSize: "0.875rem", // smaller font size
+                    padding: "4px 8px", // reduced padding
                   },
                 },
               },
             }}
           >
-            
             <Button
               ref={addNewGroupRef}
               variant="outlined"
@@ -393,8 +392,7 @@ console.log(newGroupName);
           </Alert>
         </Snackbar>
       )} */}
-            <Loader open={loader}  />
-
+      <Loader open={loader} />
     </Container>
   );
 };

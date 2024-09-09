@@ -1,3 +1,4 @@
+
 import axios from "axios";
 import { ApiKey, baseUrlApi } from "../config";
 
@@ -27,11 +28,12 @@ export const getLogin = async (payload) => {
   }
 };
 
-export const VerifyOtp = async (otp, Mobile) => {
+export const VerifyOtp = async (otp, Mobile, name) => {
   const formData = new FormData();
   formData.append("otp", otp);
   formData.append("mobile", Mobile);
-  // formData.append("X-Api-Key", ApiKey);
+  formData.append("name", name);
+  formData.append("X-Api-Key", ApiKey);
 
   try {
     const response = await axios.post(
