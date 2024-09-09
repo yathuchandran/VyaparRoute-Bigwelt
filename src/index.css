@@ -77,3 +77,199 @@ body {
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
   transform: scale(1.05);
 }
+
+/* css in  */
+.customer-form {
+  font-family: Arial, sans-serif;
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.back-button,
+.save-button {
+  background: none;
+  border: none;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.save-button {
+  background-color: #00bfa5;
+  color: white;
+  padding: 5px 10px;
+  border-radius: 5px;
+}
+
+h1 {
+  margin: 0;
+  font-size: 20px;
+}
+
+.subtitle {
+  color: #666;
+  font-size: 14px;
+  margin-bottom: 20px;
+}
+
+input[type="text"],
+input[type="tel"] {
+  width: 50%;
+  padding: 12px; /* Increase padding */
+  margin-bottom: 15px; /* More space between fields */
+  border: 1px solid #ccc;
+  border-radius: 8px; /* Smoother corners */
+  font-size: 16px;
+}
+
+.group-select {
+  position: relative;
+}
+
+.dropdown-icon {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.balance-section {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.balance {
+  text-align: center;
+  padding: 10px;
+  border-radius: 5px;
+  flex: 1;
+  margin: 0 5px;
+}
+
+.balance.green {
+  background-color: #e8f5e9;
+  color: #00c853;
+}
+
+.balance.red {
+  background-color: #ffebee;
+  color: #d50000;
+}
+
+.balance span {
+  display: block;
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.balance small {
+  font-size: 12px;
+}
+
+.delivery-days h2,
+.product-details h2 {
+  font-size: 18px;
+  margin-bottom: 10px;
+}
+
+.day-buttons {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.day-buttons button {
+  padding: 8px 12px;
+  border: 2px solid #00bfa5; /* Thicker border */
+  background-color: white;
+  color: #00bfa5;
+  border-radius: 30px; /* Rounder buttons */
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.day-buttons button.active {
+  background-color: #00bfa5;
+  color: white;
+}
+
+table {
+  color: white;
+  background-color: #664f4f;
+  width: 100%;
+  border-collapse: separate; /* Use 'separate' for clearer borders */
+  border-spacing: 0 10px; /* Add spacing betweebackground-color:n rows */
+  margin-top: 15px;
+}
+
+th,
+td {
+  padding: 12px;
+  border: 1px solid #ddd;
+  background-color: #664f4f;
+}
+
+td input {
+  width: 100%;
+  padding: 6px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+}
+
+@media (max-width: 600px) {
+  .customer-form {
+    padding: 10px;
+  }
+
+  .balance-section {
+    flex-direction: column;
+  }
+
+  .balance {
+    margin-bottom: 10px;
+  }
+
+  table,
+  thead,
+  tbody,
+  th,
+  td,
+  tr {
+    display: block;
+  }
+
+  thead tr {
+    position: absolute;
+    top: -9999px;
+    left: -9999px;
+  }
+
+  tr {
+    margin-bottom: 10px;
+  }
+
+  td {
+    border: none;
+    position: relative;
+    padding-left: 50%;
+  }
+
+  td:before {
+    position: absolute;
+    top: 6px;
+    left: 6px;
+    width: 45%;
+    padding-right: 10px;
+    white-space: nowrap;
+    content: attr(data-label);
+    font-weight: bold;
+  }
+}

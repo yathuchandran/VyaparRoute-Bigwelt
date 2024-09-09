@@ -12,8 +12,13 @@ import { Graygreen, colourTheme } from "../../config";
 import AddCustomerForm from "../../pages/AddCustomer";
 import BusinessForm from "../../pages/BuisnesForm";
 import Loader from "../Loder/Loder";
+import { useSearchParams } from "react-router-dom";
 
 const BusinessCard = () => {
+  const [searchParams] = useSearchParams(); // Use useSearchParams to get the params
+  const id = searchParams.get("id"); // Extract id from URL
+  const name = searchParams.get("name"); // Extract name from URL
+
   // Step components
   const CreateBusiness = () => {
     return <BusinessForm onToggle={handleToggle} />;
@@ -30,7 +35,7 @@ const BusinessCard = () => {
   const AddCustomer = () => {
     return (
       <Typography variant="h5">
-        <AddCustomerForm />
+        <AddCustomerForm categoryId={id} categoryName={name} />
       </Typography>
     );
   };

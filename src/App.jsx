@@ -14,6 +14,7 @@ import AllCustomer from "./pages/AllCustomers";
 import AddCustomerForm from "./pages/AddCustomer";
 import BuisnesCardSucsess from "./pages/BuisnesCardSucsess";
 import Banner from "./components/Dashboard/Banner";
+import Tmp from "./pages/Tmp";
 
 const App = () => {
   return (
@@ -41,6 +42,7 @@ const App = () => {
           <Route path="/add/customer" element={<AddCustomerForm />} />
           <Route path="/success" element={<BuisnesCardSucsess />} />
           <Route path="/home" element={<Banner />} />
+          <Route path="/prd" element={<Tmp />} />
         </Routes>
       </Router>
     </div>

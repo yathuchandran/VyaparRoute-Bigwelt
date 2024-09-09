@@ -1,17 +1,27 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import PropTypes from "prop-types";
 import { useNavigate } from "react-router-dom";
 import "./category.css";
+import { useDispatch, useSelector } from "react-redux";
+import { ALLCategoryAction } from "../../redux/action_api/productAction";
 
 const CategoryComp = ({ initialCards, cardsPerPage }) => {
+  const dispatch = useDispatch();
+  const { loading, error, allCategory } = useSelector(
+    (state) => state.allGroup
+  );
+
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedCategoryIndex, setSelectedCategoryIndex] = useState(null); // Keep track of the selected category
 
   const indexOfLastCard = currentPage * cardsPerPage;
   const indexOfFirstCard = indexOfLastCard - cardsPerPage;
-  const currentCards = initialCards.slice(indexOfFirstCard, indexOfLastCard);
 
   const navigate = useNavigate();
+
+  useEffect(() => {
+    dispatch(ALLCategoryAction());
+  }, [dispatch]);
 
   // Handle when a category card is clicked
   const handleCardClick = (category, index) => {
@@ -34,7 +44,7 @@ const CategoryComp = ({ initialCards, cardsPerPage }) => {
 
       {/* Category cards */}
       <div className="card-group">
-        {currentCards.map((item, index) => (
+        {allCategory?.map((item, index) => (
           <div
             key={index}
             className={`card ${
@@ -42,13 +52,9 @@ const CategoryComp = ({ initialCards, cardsPerPage }) => {
             }`} // Add class dynamically
             onClick={() => handleCardClick(item, index)}
           >
-            <img
-              src={item.imageSrc}
-              className="card-img-top"
-              alt={item.title}
-            />
+            <img src={item.image} className="card-img-top" alt={item.name} />
             <div className="card-body">
-              <h5 className="card-title">{item.title}</h5>
+              <h5 className="card-title">{item.name}</h5>
             </div>
           </div>
         ))}
@@ -62,34 +68,6 @@ const CategoryComp = ({ initialCards, cardsPerPage }) => {
       </div>
     </div>
   );
-};
-
-// Default props
-CategoryComp.defaultProps = {
-  initialCards: [
-    {
-      imageSrc:
-        "https://media.istockphoto.com/id/1299190286/video/businessman-walking-office-corridor.jpg?s=640x640&k=20&c=GSti6qOg3YgZRf96b1KOeicBJ5u2LSRT7Y1f7hwykUM=",
-      title: "Tiffin Service",
-    },
-    {
-      imageSrc: "./images/banner.png",
-      title: "Milk Supplier",
-    },
-    {
-      imageSrc: "https://example.com/water-supplier.jpg",
-      title: "Water Supplier",
-    },
-    {
-      imageSrc: "https://example.com/newspaper-delivery.jpg",
-      title: "Newspaper Delivery",
-    },
-    {
-      imageSrc: "https://example.com/bakery-business.jpg",
-      title: "Bakery Business",
-    },
-  ],
-  cardsPerPage: 6,
 };
 
 // Define propTypes

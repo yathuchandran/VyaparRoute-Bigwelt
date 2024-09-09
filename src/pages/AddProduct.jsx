@@ -12,9 +12,10 @@ import {
 import Swal from "sweetalert2";
 import CameraAltIcon from "@mui/icons-material/CameraAlt";
 import { useDispatch, useSelector } from "react-redux";
-import { CreateProduct } from "../redux/action_api/productAction";
+import { CreateProduct, clearError } from "../redux/action_api/productAction";
 import Grid from "@mui/system/Grid";
 import Loader from "../components/Loder/Loder";
+import { CREATE_PRODUCT_RESET } from "../redux/constant/productConstant";
 
 const AddProduct = ({ onToggle }) => {
   const [open, setOpen] = useState(false);
@@ -33,10 +34,12 @@ const AddProduct = ({ onToggle }) => {
   const [imagePreviewUrl, setImagePreviewUrl] = useState(null);
   const [sucsess, setsucsess] = useState(true);
 
-  console.log(sucsess);
-
   const dispatch = useDispatch();
-  const { loading, error, product } = useSelector((state) => state.products);
+  const { loading, error, product, isSucsess } = useSelector(
+    (state) => state.products
+  );
+
+  console.log(product);
 
   const measureUnits = [
     "Numbers(NOS)",
@@ -66,16 +69,19 @@ const AddProduct = ({ onToggle }) => {
 
     if (product) {
       Swal.fire({
-        title: "Product added successfully!",
+        title: `${product}`,
         icon: "success",
         showConfirmButton: false,
         timer: 1500,
       });
-
       // Clear the local storage after a successful addition
       // localStorage.removeItem("productData");
       // onToggle(true);
       setsucsess(false);
+    }
+
+    if (isSucsess) {
+      dispatch({ type: CREATE_PRODUCT_RESET });
     }
 
     if (error) {
@@ -86,8 +92,14 @@ const AddProduct = ({ onToggle }) => {
         showConfirmButton: false,
         timer: 1500,
       });
+
+      dispatch(clearError());
     }
-  }, [product, error, onToggle]);
+
+    return () => {
+      dispatch({ type: CREATE_PRODUCT_RESET });
+    };
+  }, [product, error, onToggle, isSucsess, dispatch]);
 
   const handleClick = () => {
     setOpen(!open);
@@ -215,9 +227,9 @@ const AddProduct = ({ onToggle }) => {
               )}
 
               <TextField
+                required
                 fullWidth
                 label="Sale Price {RS}"
-                required
                 variant="outlined"
                 value={price}
                 onChange={(e) => setPrice(e.target.value)}
@@ -225,6 +237,7 @@ const AddProduct = ({ onToggle }) => {
               />
 
               <TextField
+                required
                 fullWidth
                 value={amount}
                 onChange={(e) => setAmount(e.target.value)}

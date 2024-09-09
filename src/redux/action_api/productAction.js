@@ -2,9 +2,13 @@ import {
   ADD_STAFF_FAILURE,
   ADD_STAFF_REQUEST,
   ADD_STAFF_SUCCSESS,
+  ALL_CATEGORY_FAILURE,
+  ALL_CATEGORY_REQUEST,
+  ALL_CATEGORY_SUCCSESS,
   ALL_CUSTOMER_FAILURE,
   ALL_CUSTOMER_REQUEST,
   ALL_CUSTOMER_SUCCSESS,
+  CLEAR_ERROR,
   CREATE_PRODUCT_FAILURE,
   CREATE_PRODUCT_REQUEST,
   CREATE_PRODUCT_SUCCSESS,
@@ -110,6 +114,9 @@ export const GetAllGroup = () => async (dispatch) => {
   }
 };
 
+//category id
+//staff id
+
 export const addStaffGroup =
   (formdata, selectedGroups, grp_id) => async (dispatch) => {
     try {
@@ -177,4 +184,36 @@ export const allCustomersAction = () => async (dispatch) => {
       payload: error.response?.data?.message || error.message,
     });
   }
+};
+
+export const ALLCategoryAction = () => async (dispatch) => {
+  try {
+    dispatch({ type: ALL_CATEGORY_REQUEST });
+
+    const { data } = await axios.get(
+      "https://vr.w4u.in/manage/api/business_category/all",
+
+      {
+        headers: {
+          "X-Api-Key": "8YUI3673DEB6F281A8F2E856902HJKU7",
+          "Content-Type": "multipart/form-data",
+        },
+      }
+    );
+
+    dispatch({
+      type: ALL_CATEGORY_SUCCSESS,
+      payload: data.data.business_category,
+    });
+  } catch (error) {
+    dispatch({
+      type: ALL_CATEGORY_FAILURE,
+      payload: error.response?.data?.message || error.message,
+    });
+  }
+};
+
+// actions/productActions.js
+export const clearError = () => async (dispatch) => {
+  dispatch({ type: CLEAR_ERROR });
 };

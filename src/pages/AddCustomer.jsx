@@ -20,7 +20,7 @@ import Loader from "../components/Loder/Loder";
 import Swal from "sweetalert2";
 import { useNavigate } from "react-router-dom";
 
-const AddCustomerForm = () => {
+const AddCustomerForm = ({ categoryId }) => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
@@ -33,12 +33,6 @@ const AddCustomerForm = () => {
     isSucsess: suc,
   } = useSelector((state) => state.AddCustomer);
   const stafId = localStorage.getItem("stafId");
-  console.log(
-    load,
-    err,
-    suc,
-    "==================================================================="
-  );
 
   const [loader, setLoader] = useState(false);
   const [customerName, setCustomerName] = useState("");
@@ -49,6 +43,8 @@ const AddCustomerForm = () => {
   const [anchorEl, setAnchorEl] = useState(null);
   const [newGroupName, setNewGroupName] = useState("");
 
+  const [nameError, setnameError] = useState(false);
+  const [numberError, setnumberError] = useState(false);
   console.log(newGroupName);
 
   useEffect(() => {
@@ -60,12 +56,11 @@ const AddCustomerForm = () => {
     if (isSucsess) {
       Swal.fire({
         title: "group added successfully!",
-        text: "Your group has been successfully added",
+        text: `Your group has been successfully added`,
         icon: "success",
         showConfirmButton: false,
         timer: 1500,
       });
-      navigate("/all/customers");
     }
 
     if (error) {
@@ -81,11 +76,12 @@ const AddCustomerForm = () => {
     if (suc) {
       Swal.fire({
         title: "Add Customer successfully!",
-        text: "Your Customer has been successfully added",
+        text: `Your Customer has been successfully added`,
         icon: "success",
         showConfirmButton: false,
         timer: 1500,
       });
+      navigate("/all/customers");
     }
     if (err) {
       Swal.fire({
@@ -98,10 +94,8 @@ const AddCustomerForm = () => {
     }
   }, [loading, isSucsess, error, suc]);
 
-  // Ref for the Add New Group button
   const addNewGroupRef = useRef(null);
 
-  // Fetch groups when component mounts
   useEffect(() => {
     dispatch(GetAllGroup());
   }, [dispatch]);
@@ -132,7 +126,6 @@ const AddCustomerForm = () => {
 
   // Add new group handler
   const handleAddNewGroup = () => {
-    console.log("NEW GROUP ADDD");
     if (newGroupName.trim() === "") {
       return;
     }
@@ -147,29 +140,35 @@ const AddCustomerForm = () => {
     const selectedGroup = groups.find((group) => group.id === selectedGroupId);
   };
 
-  // Save customer without resetting the form
   const handleSaveCustomer = () => {
+    setnameError(!customerName);
+    setnumberError(!contactNumber);
+    if (!contactNumber || !customerName) return;
+
+    if (!contactNumber) return;
+    const phoneNumberPattern = /^[0-9]{10}$/;
+
+    if (!contactNumber || !phoneNumberPattern.test(contactNumber)) {
+      Swal.fire({
+        title: "Invalid Phone Number",
+        text: "Please enter a valid 10-digit phone number.",
+        icon: "error",
+        showConfirmButton: false,
+        timer: 1500,
+      });
+      return;
+    }
+
     const selectedGroup = groups.find((group) => group.id === selectedGroupId);
 
     const formData = new FormData();
     formData.set("fullname", customerName);
     formData.set("mobile", contactNumber);
-    formData.set("group_id", selectedGroupId);
+    formData.set("group_id", "1");
     formData.set("staff_id", stafId ?? "");
+    formData.set("category_id", stafId ?? "1");
 
     dispatch(addCustomer(formData));
-
-    console.log("Saving customer:====", {
-      stafId,
-      customerName,
-      contactNumber,
-      id: selectedGroupId,
-      group_name: selectedGroup ? selectedGroup.group_name : "",
-    });
-    // dispatch(addCustomer());
-
-    setSuccessMessage("Customer saved successfully!");
-    navigate("/all/customers");
   };
 
   const handleImportCustomers = () => {
@@ -191,8 +190,6 @@ const AddCustomerForm = () => {
       >
         <Typography variant="h4">Add New Customer</Typography>
       </div>
-
-      {/* Import Customers Button */}
       <div
         style={{
           display: "flex",
@@ -222,6 +219,7 @@ const AddCustomerForm = () => {
         {/* Customer Name Field */}
         <FormControl fullWidth style={{ marginBottom: "16px" }}>
           <TextField
+            error={nameError}
             label="Customer Name"
             value={customerName}
             onChange={handleCustomerNameChange}
@@ -232,8 +230,10 @@ const AddCustomerForm = () => {
         {/* Contact Number Field */}
         <FormControl fullWidth style={{ marginBottom: "16px" }}>
           <TextField
+            error={numberError}
             label="Contact Number"
             value={contactNumber}
+            type="Number"
             onChange={handleContactNumberChange}
             placeholder="Contact number"
           />
@@ -360,7 +360,7 @@ const AddCustomerForm = () => {
             onClick={handleSaveAndNew}
             style={{
               borderRadius: "8px",
-              backgroundColor: "#00BFA6",
+              backgroundColor: Graygreen,
               color: "#fff",
             }}
           >
@@ -371,7 +371,7 @@ const AddCustomerForm = () => {
             onClick={handleSaveCustomer}
             style={{
               borderRadius: "8px",
-              backgroundColor: "#00BFA6",
+              backgroundColor: Graygreen,
               color: "#fff",
             }}
           >
@@ -380,6 +380,18 @@ const AddCustomerForm = () => {
         </div>
       </div>
 
+      {/* Success Message Snackbar */}
+      {/* {successMessage && (
+        <Snackbar
+          open={Boolean(successMessage)}
+          autoHideDuration={6000}
+          onClose={() => setSuccessMessage("")}
+        >
+          <Alert onClose={() => setSuccessMessage("")} severity="success">
+            {successMessage}
+          </Alert>
+        </Snackbar>
+      )} */}
       <Loader open={loader} />
     </Container>
   );

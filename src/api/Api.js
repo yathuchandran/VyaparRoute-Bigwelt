@@ -167,7 +167,7 @@ export const setpswrd = async (password, confirmPassword, name, Mobile) => {
 
 export const cateList = async () => {
   try {
-    const response = await axios.get(`${baseUrlApi}business_details/all/`, {
+    const response = await axios.get(`${baseUrlApi}business_category/all/`, {
       headers: {
         "X-Api-Key": "8YUI3673DEB6F281A8F2E856902HJKU7",
         "Content-Type": "multipart/form-data",
